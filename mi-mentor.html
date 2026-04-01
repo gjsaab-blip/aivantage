@@ -240,38 +240,58 @@
 
         async function handleFileUpload(event) {
             const files = event.target.files;
+            if (!files || files.length === 0) return;
+            
             showLoading("Procesando CV...");
+            
             try {
                 for (let file of files) {
-                    const reader = new FileReader();
-                    const text = await new Promise((resolve) => {
+                    // Leer el archivo localmente
+                    const text = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
                         reader.onload = async function() {
-                            if (file.type === "application/pdf") {
-                                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-                                let fullT = "";
-                                for (let i=1; i<=pdf.numPages; i++) {
-                                    const p = await pdf.getPage(i);
-                                    const c = await p.getTextContent();
-                                    fullT += c.items.map(it => it.str).join(" ");
+                            try {
+                                if (file.name.toLowerCase().endsWith(".pdf")) {
+                                    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(this.result)}).promise;
+                                    let fullT = "";
+                                    for (let i=1; i<=pdf.numPages; i++) {
+                                        const p = await pdf.getPage(i);
+                                        const c = await p.getTextContent();
+                                        fullT += c.items.map(it => it.str).join(" ");
+                                    }
+                                    resolve(fullT);
+                                } else if (file.name.toLowerCase().endsWith(".docx")) {
+                                    const res = await mammoth.extractRawText({arrayBuffer: this.result});
+                                    resolve(res.value);
+                                } else {
+                                    reject(new Error("Formato no soportado. Usa PDF o DOCX."));
                                 }
-                                resolve(fullT);
-                            } else {
-                                const res = await mammoth.extractRawText({arrayBuffer: this.result});
-                                resolve(res.value);
-                            }
+                            } catch (err) { reject(err); }
                         };
+                        reader.onerror = () => reject(new Error("Error al leer el archivo físico."));
                         reader.readAsArrayBuffer(file);
                     });
-                    const res = await callIA(`Extrae datos profesionales. REGLA ESTRICTA: Cada logro en 'logros' debe empezar con • y un salto de línea (un bullet por renglón). JSON: {summary:'', blocks:[{header:'', logros:''}], edu:[{header:'', detalle:''}], skills:[{name:'', type:'tech|soft|lang'}]}`, text, 1500);
-                    if(res.summary && !userData.summary.includes(res.summary)) userData.summary = (userData.summary + "\n" + res.summary).trim();
+
+                    // Llamada a la IA (Tu lógica original de callIA)
+                    const res = await callIA(`Extrae datos profesionales. REGLA ESTRICTA: Cada logro en 'logros' debe empezar con • y un salto de línea. JSON: {summary:'', blocks:[{header:'', logros:''}], edu:[{header:'', detalle:''}], skills:[{name:'', type:'tech|soft|lang'}]}`, text, 1500);
+                    
+                    if(res.summary && !userData.summary.includes(res.summary)) {
+                        userData.summary = (userData.summary + "\n" + res.summary).trim();
+                    }
                     if(res.blocks) userData.blocks = [...res.blocks, ...userData.blocks];
                     if(res.edu) userData.edu = [...res.edu, ...userData.edu];
                     if(res.skills) userData.skills = [...res.skills, ...userData.skills];
-                    guardar(); renderAll();
+                    
+                    guardar(); 
+                    renderAll();
                 }
-            } catch(e) { alert("Error en carga: " + e.message); }
-            hideLoading();
-            event.target.value = '';
+            } catch(e) { 
+                console.error(e);
+                alert("Error en carga: " + e.message); 
+            } finally {
+                hideLoading();
+                event.target.value = ''; // Limpiar el input
+            }
         }
 
         async function decodificarJD() {
