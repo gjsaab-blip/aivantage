@@ -10,7 +10,8 @@
     <style>
         :root { --ai-blue: #005587; --ai-light-blue: #eaf4f9; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; --danger: #e53e3e; --success: #2f855a; --warning: #c05621; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); }
-        .navbar, .toolbar, .tabs, .target-panel, .block-controls, .tool-btn, .tab, #userSelector { display: flex; }
+        .navbar, .toolbar, .tabs, .target-panel, .tool-btn, .tab, #userSelector { display: flex; }
+.block-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); display: none; gap: 10px; align-items: center; position: sticky; top: 72px; z-index: 99; flex-wrap: wrap; }
         .tool-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
@@ -98,7 +99,8 @@
         <button class="tool-btn" onclick="addManualBlock('edu')"><i class="fas fa-graduation-cap"></i> Edu.</button>
         <button id="btnCombinar" class="tool-btn btn-primary" style="display:none" onclick="combinarBloques()"><i class="fas fa-object-group"></i> Combinar (IA)</button>
         <select id="outLang" class="tool-btn"><option value="es">ESP</option><option value="en">ENG</option></select>
-        <button class="tool-btn btn-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar CV Final</button>
+        <button class="tool-btn" style="color:var(--danger); border-color:var(--danger); margin-left: auto;" onclick="limpiarTodo()"><i class="fas fa-eraser"></i> Limpiar Todo</button>
+<button class="tool-btn btn-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar CV Final</button>
     </div>
 
     <div id="mainLayout" class="main-layout">
@@ -299,17 +301,23 @@
             const eduCont = document.getElementById('blocksEdu');
             expCont.innerHTML = ""; eduCont.innerHTML = "";
             userData.blocks.forEach((b, i) => {
-                expCont.innerHTML += `<div class="block"><div class="block-controls">
-                <input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()">
-                <button style="border:none; background:none; color:gray; cursor:pointer;" onclick="deleteItem('blocks', ${i})"><i class="fas fa-trash"></i></button></div>
-                <input class="input-header" value="${b.header || ''}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
-                <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${b.logros || ''}</div></div>`;
-            });
+    expCont.innerHTML += `<div class="block">
+    <div class="block-controls">
+        <input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()">
+        <button style="border:none; background:none; color:gray; cursor:pointer;" onclick="deleteItem('blocks', ${i})"><i class="fas fa-trash"></i></button>
+    </div>
+    <input class="input-header" value="${b.header || ''}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
+    <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${b.logros || ''}</div></div>`;
+});
             userData.edu.forEach((e, i) => {
-                eduCont.innerHTML += `<div class="block"><div class="block-controls"><span></span><button style="border:none; background:none; color:gray; cursor:pointer;" onclick="deleteItem('edu', ${i})"><i class="fas fa-trash"></i></button></div>
-                <input class="input-header" value="${e.header || ''}" onblur="updateItem('edu', ${i}, 'header', this.value)">
-                <div class="editable-area" contenteditable="true" onblur="updateItem('edu', ${i}, 'detalle', this.innerText)">${e.detalle || ''}</div></div>`;
-            });
+    eduCont.innerHTML += `<div class="block">
+    <div class="block-controls">
+        <span></span>
+        <button style="border:none; background:none; color:gray; cursor:pointer;" onclick="deleteItem('edu', ${i})"><i class="fas fa-trash"></i></button>
+    </div>
+    <input class="input-header" value="${e.header || ''}" onblur="updateItem('edu', ${i}, 'header', this.value)">
+    <div class="editable-area" contenteditable="true" onblur="updateItem('edu', ${i}, 'detalle', this.innerText)">${e.detalle || ''}</div></div>`;
+});
             if (Array.isArray(userData.skills)) {
                 document.getElementById('skillsContainer').innerHTML = userData.skills.map(s => `<span class="skill-tag skill-${s.type || 'tech'}">${s.name}</span>`).join('');
             }
@@ -370,6 +378,13 @@ async function combinarBloques() {
             }
             hideLoading();
         }
+function limpiarTodo() {
+    if(confirm("¿Estás seguro de que quieres borrar TODOS los datos de este perfil? Esta acción no se puede deshacer.")) {
+        userData = { summary: "", blocks: [], edu: [], skills: [] };
+        guardar();
+        renderAll();
+    }
+}
     </script>
 </body>
 </html>
