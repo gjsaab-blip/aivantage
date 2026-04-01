@@ -342,6 +342,34 @@
         function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
         function renderAll() { renderBlocks(); document.getElementById('summaryArea').innerText = userData.summary || ""; }
         function guardar() { localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
+async function combinarBloques() {
+            const selectedIndices = Array.from(document.querySelectorAll('.merge-check:checked'))
+                .map(cb => parseInt(cb.dataset.index))
+                .sort((a, b) => b - a); // Orden descendente para borrar sin desfasar el array
+
+            if (selectedIndices.length < 2) return;
+
+            const blocksToMerge = selectedIndices.map(i => userData.blocks[i]);
+            showLoading("Combinando experiencias con IA...");
+
+            try {
+                const prompt = "Combina estas experiencias en una sola, eliminando duplicados y redactando logros potentes en primera persona: " + JSON.stringify(blocksToMerge);
+                const res = await callIA(`Crea un único bloque profesional. JSON: {header:'', logros:''}`, prompt, 1200);
+
+                // 1. Borrar los bloques viejos
+                selectedIndices.forEach(i => userData.blocks.splice(i, 1));
+                
+                // 2. Añadir el nuevo bloque al principio
+                userData.blocks.unshift(res);
+
+                guardar();
+                renderBlocks();
+                toggleMergeBtn(); // Ocultar el botón tras combinar
+            } catch (e) {
+                alert("Error al combinar: " + e.message);
+            }
+            hideLoading();
+        }
     </script>
 </body>
 </html>
