@@ -280,21 +280,45 @@
         }
 
         async function decodificarJD() {
-            const jd = document.getElementById('targetDesc').value;
-            if(!jd) return;
-            showLoading("Analizando Match...");
-            try {
-                const promptPerfil = `RESUMEN: ${userData.summary}. EXP: ${JSON.stringify(userData.blocks)}. SKILLS: ${JSON.stringify(userData.skills)}`;
-                const res = await callIA(`Compara mi perfil con la JD. JSON: {score:85, match_skills:[{name:'', type:'tech'}], gaps:[{name:'', advice:''}]}`, `PERFIL: ${promptPerfil} \n JD: ${jd}`, 2000);
-                document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
-                document.getElementById('matchScoreDisplay').style.display = 'block';
-                let html = "";
-                if(res.match_skills) res.match_skills.forEach(s => html += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
-                if(res.gaps) res.gaps.forEach(g => html += `<span class="skill-tag skill-gap" title="${g.advice}">${g.name}</span>`);
-                document.getElementById('skillsContainer').innerHTML = html;
-            } catch(e) { alert(e.message); }
-            hideLoading();
-        }
+    const jd = document.getElementById('targetDesc').value;
+    if(!jd) return;
+    showLoading("Analizando Match...");
+    try {
+        const promptPerfil = `RESUMEN: ${userData.summary}. EXP: ${JSON.stringify(userData.blocks)}. SKILLS: ${JSON.stringify(userData.skills)}`;
+        
+        // Aquí le pedimos la explicación detallada, el resumen y los nombres alternativos
+        const res = await callIA(`Analiza la JD. 
+        JSON: {
+            score: 85, 
+            resumen_puesto: 'Explicación clara en 2 frases de qué trata el rol realmente.',
+            nombres_alternativos: 'Nombre 1, Nombre 2',
+            match_skills: [{name:'', type:'tech'}], 
+            gaps: [{name:'', advice:''}]
+        }`, `PERFIL: ${promptPerfil} \n JD: ${jd}`, 2000);
+
+        // Actualizamos el porcentaje
+        document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
+        document.getElementById('matchScoreDisplay').style.display = 'block';
+        
+        // Creamos el texto de explicación para mostrarlo arriba de las skills
+        let infoHtml = `
+            <div style="font-size:0.85em; margin-bottom:15px; background:var(--ai-light-blue); padding:10px; border-radius:8px; border-left:4px solid var(--ai-blue);">
+                <strong>¿De qué trata este rol?:</strong> <br>${res.resumen_puesto}<br><br>
+                <strong>Otros nombres para este puesto:</strong> <br><i style="color:gray">${res.nombres_alternativos}</i>
+            </div>
+        `;
+        
+        // Añadimos las bolitas de colores (skills) después de la explicación
+        let tagsHtml = "";
+        if(res.match_skills) res.match_skills.forEach(s => tagsHtml += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
+        if(res.gaps) res.gaps.forEach(g => tagsHtml += `<span class="skill-tag skill-gap" title="${g.advice}">${g.name}</span>`);
+        
+        // Metemos todo en el contenedor de la derecha
+        document.getElementById('skillsContainer').innerHTML = infoHtml + tagsHtml;
+        
+    } catch(e) { alert(e.message); }
+    hideLoading();
+}
 
         function renderBlocks() {
             const expCont = document.getElementById('blocksExp');
