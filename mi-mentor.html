@@ -3,61 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUSTAVO SAAB - CV</title>
+    <title>GUSTAVO SAAB - CV Profesional</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
     <style>
         :root { --ai-blue: #005587; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; }
-        body { font-family: 'Arial', sans-serif; background: var(--bg-app); margin: 0; padding: 0; color: var(--text-main); }
+        body { font-family: 'Arial', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); }
         
         /* Interfaz Web */
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); }
-        .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); gap: 10px; display: flex; }
-        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; padding: 30px 40px; max-width: 1200px; margin: auto; }
+        .navbar, .toolbar, .target-panel, .tool-btn, #loadingOverlay, .config-btn, .merge-check { display: flex; }
+        .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); }
+        .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); gap: 10px; }
+        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 30px; padding: 30px 40px; max-width: 1300px; margin: auto; }
         
-        /* Estilos del CV */
-        .cv-paper { background: white; padding: 50px; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.05); min-height: 1100px; width: 100%; box-sizing: border-box; }
+        /* Estilos del CV (Lo que se ve en pantalla y PDF) */
+        .cv-paper { background: white; padding: 40px; border-radius: 4px; box-shadow: 0 0 10px rgba(0,0,0,0.05); min-height: 1100px; }
         .cv-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        .cv-name { font-size: 22pt; font-weight: bold; text-transform: uppercase; margin: 0; color: #000; }
-        .cv-title { font-size: 13pt; color: #333; margin: 5px 0; font-weight: bold; }
-        .cv-contact { font-size: 10pt; color: #444; margin: 5px 0; }
+        .cv-name { font-size: 24pt; font-weight: bold; text-transform: uppercase; margin: 0; }
+        .cv-title { font-size: 14pt; color: #444; margin: 5px 0; }
+        .cv-contact { font-size: 10pt; color: #666; }
         
-        .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000; margin: 15px 0 10px 0; padding-bottom: 2px; color: #000; }
-        .block-header { font-weight: bold; font-size: 11pt; margin-bottom: 4px; color: #000; }
-        .logros-list { margin: 0 0 15px 0; padding-left: 20px; list-style-type: disc; font-size: 10.5pt; line-height: 1.4; color: #333; }
-        .logros-list li { margin-bottom: 4px; display: list-item; }
+        .section-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #ccc; margin: 20px 0 10px 0; padding-bottom: 3px; }
+        .block-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 11pt; margin-bottom: 5px; }
+        .logros-list { margin: 0; padding-left: 20px; list-style-type: disc; font-size: 10.5pt; line-height: 1.5; }
+        .logros-list li { margin-bottom: 5px; }
 
-        .block-actions { margin-top: 5px; display: flex; gap: 5px; }
-        .btn-mini { padding: 5px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+        /* Botones flotantes solo en WEB */
+        .block-actions { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-mini { padding: 4px 8px; font-size: 0.7em; cursor: pointer; border: 1px solid #ddd; border-radius: 4px; background: #fff; }
+        .btn-mini:hover { background: #f0f0f0; }
 
-        /* REGLAS CRÍTICAS DE IMPRESIÓN */
         @media print {
-            @page { margin: 0; size: auto; }
-            body { background: white !important; padding: 1.5cm !important; }
-            .navbar, .toolbar, .target-panel, .block-actions, #loadingOverlay, #configModal, #voiceModal { display: none !important; }
-            .main-layout { display: block !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
-            .cv-paper { box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; }
-            .cv-header { border-bottom: 2px solid #000 !important; }
-            button, .btn-mini { display: none !important; }
+            body { background: white; }
+            .navbar, .toolbar, .target-panel, .block-actions, #loadingOverlay, #configModal, #voiceModal, .merge-check { display: none !important; }
+            .main-layout { display: block; padding: 0; margin: 0; }
+            .cv-paper { box-shadow: none; padding: 0; margin: 0; border: none; }
+            .cv-header { border-bottom: 2px solid #000; }
+            @page { margin: 1.5cm; }
         }
 
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 5000; justify-content: center; align-items: center; flex-direction: column; }
+        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
+        #configModal, #voiceModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 4000; width: 350px; }
     </style>
 </head>
 <body>
 
     <div id="loadingOverlay">
         <i class="fas fa-circle-notch fa-spin" style="font-size: 3em; color: var(--ai-blue);"></i>
-        <p id="loadingStatus">Procesando...</p>
+        <p id="loadingStatus" style="margin-top: 15px; font-weight: bold;">Procesando...</p>
     </div>
 
     <nav class="navbar">
         <div style="font-weight: 900; color: var(--ai-blue); font-size: 1.4em;">AiVantage</div>
-        <button class="btn-mini" onclick="openConfig()"><i class="fas fa-cog"></i> Configuración</button>
+        <div id="matchScoreDisplay" style="display:none; font-weight:800; color:green;">Match: 0%</div>
+        <button class="btn-mini" onclick="openConfig()"><i class="fas fa-cog"></i> Config</button>
     </nav>
 
     <div class="toolbar">
+        <button class="btn-mini" onclick="document.getElementById('fileInput').click()"><i class="fas fa-upload"></i> Cargar CV</button>
+        <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)">
         <button class="btn-mini" onclick="addManualBlock()"><i class="fas fa-plus"></i> Añadir Puesto</button>
-        <button class="btn-mini" style="background: var(--ai-blue); color: white;" onclick="window.print()"><i class="fas fa-file-pdf"></i> GENERAR PDF PROFESIONAL</button>
+        <button class="btn-mini" style="background: var(--ai-blue); color: white;" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar PDF Final</button>
     </div>
 
     <div class="main-layout">
@@ -69,43 +76,45 @@
             </div>
 
             <div class="section-title">Professional Summary</div>
-            <div id="summaryArea" contenteditable="true" style="font-size: 10.5pt; line-height: 1.5; margin-bottom: 15px;"></div>
+            <div id="summaryArea" contenteditable="true" style="font-size: 10.5pt; line-height: 1.5;"></div>
 
             <div class="section-title">Professional Experience</div>
             <div id="experienceContainer"></div>
         </div>
 
-        <div class="target-panel" style="background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); height: fit-content;">
-            <h4 style="margin: 0 0 10px 0;">Analizador</h4>
-            <textarea id="targetDesc" style="width:100%; height:100px;" placeholder="Pega JD..."></textarea>
-            <button onclick="decodificarJD()" style="width:100%; margin-top:10px; padding: 10px; background: var(--ai-blue); color: white; border: none; border-radius: 4px;">Analizar</button>
-            <div id="matchScoreDisplay" style="margin-top:10px; font-weight:bold; color:green; display:none;">Match: 0%</div>
+        <div class="target-panel">
+            <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); width: 100%;">
+                <h4 style="margin-top: 0;">Analizador de Vacante</h4>
+                <textarea id="targetDesc" style="width:100%; height:150px; margin-bottom: 10px;" placeholder="Pega la JD aquí..."></textarea>
+                <button onclick="decodificarJD()" style="width:100%; padding: 10px; background: var(--ai-blue); color: white; border: none; border-radius: 5px; cursor: pointer;">Analizar Puesto</button>
+                <div id="skillsContainer" style="margin-top: 15px;"></div>
+            </div>
         </div>
     </div>
 
-    <div id="configModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:6000;">
+    <div id="configModal">
         <h4>API Key OpenAI</h4>
-        <input type="password" id="apiKeyInput" style="width:100%; padding:8px; margin:10px 0;">
+        <input type="password" id="apiKeyInput" style="width:100%; padding: 8px; margin-bottom: 10px;">
         <button onclick="saveApiKey()">Guardar</button>
         <button onclick="closeConfig()">Cerrar</button>
     </div>
 
-    <div id="voiceModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:6000; width:300px;">
-        <h4>Escuchado:</h4>
-        <p id="voicePreview" style="background:#f0f0f0; padding:10px; border-radius:5px;"></p>
-        <button onclick="processVoiceUpdate()" style="background:green; color:white; border:none; padding:10px; width:100%;">Aplicar cambios</button>
+    <div id="voiceModal">
+        <h4>Transcripción</h4>
+        <p id="voicePreview" style="font-size: 0.9em; background: #eee; padding: 10px;"></p>
+        <button onclick="processVoiceUpdate()">Aplicar al bloque</button>
+        <button onclick="closeVoiceModal()">Cancelar</button>
     </div>
 
     <script>
         let userData = { summary: "", blocks: [], activeIndex: -1 };
         let recognition;
 
+        // Inicialización
         window.onload = () => {
             const saved = localStorage.getItem('aivantage_data');
-            if(saved) {
-                userData = JSON.parse(saved);
-                renderAll();
-            }
+            if(saved) userData = JSON.parse(saved);
+            renderAll();
             setupVoice();
         };
 
@@ -115,40 +124,39 @@
                 recognition = new Speech();
                 recognition.lang = 'es-ES';
                 recognition.onresult = (e) => {
-                    document.getElementById('voicePreview').innerText = e.results[0][0].transcript;
+                    const text = e.results[0][0].transcript;
+                    document.getElementById('voicePreview').innerText = text;
                     document.getElementById('voiceModal').style.display = 'block';
                 };
-                recognition.onerror = () => hideLoading();
-                recognition.onend = () => hideLoading();
             }
         }
 
         function startDeepDive(index) {
             userData.activeIndex = index;
-            showLoading("Escuchando...");
             recognition.start();
+            showLoading("Escuchando...");
         }
 
         async function processVoiceUpdate() {
+            closeVoiceModal();
             const voiceText = document.getElementById('voicePreview').innerText;
             const currentBlock = userData.blocks[userData.activeIndex];
-            document.getElementById('voiceModal').style.display = 'none';
-            showLoading("IA integrando mejoras...");
+            showLoading("IA integrando cambios...");
             
             try {
-                const res = await callIA(`Reescribe los logros del CV usando la nueva info. Devuelve JSON: {header:'', logros:''}. Los logros deben estar separados por el caracter •`, 
-                `CONTEXTO: ${JSON.stringify(currentBlock)} \n USER: ${voiceText}`, 800);
+                const res = await callIA(`Mejora este bloque de CV con la nueva info del usuario. JSON: {header:'', logros:''}`, 
+                `ACTUAL: ${JSON.stringify(currentBlock)} \n NUEVO: ${voiceText}`, 1000);
                 userData.blocks[userData.activeIndex] = res;
                 renderAll();
-            } catch(e) { alert("Error: " + e.message); }
+            } catch(e) { alert(e.message); }
             hideLoading();
         }
 
         function renderAll() {
-            // Ordenar por año (descendente)
+            // Orden cronológico automático (Intenta extraer año del header)
             userData.blocks.sort((a, b) => {
-                const yearA = (a.header.match(/\d{4}/g) || [0]).map(Number).sort((x,y)=>y-x)[0];
-                const yearB = (b.header.match(/\d{4}/g) || [0]).map(Number).sort((x,y)=>y-x)[0];
+                const yearA = a.header.match(/\d{4}/) ? parseInt(a.header.match(/\d{4}/)[0]) : 0;
+                const yearB = b.header.match(/\d{4}/) ? parseInt(b.header.match(/\d{4}/)[0]) : 0;
                 return yearB - yearA;
             });
 
@@ -157,13 +165,12 @@
             container.innerHTML = "";
 
             userData.blocks.forEach((b, i) => {
-                // Limpiar y separar logros por viñeta o punto
-                const rawLogros = b.logros.split(/[•\n,.]/).filter(l => l.trim().length > 5);
-                const bullets = rawLogros.map(l => `<li>${l.trim()}</li>`).join('');
-                
+                const bullets = b.logros.split('\n').filter(l => l.trim() !== "").map(l => `<li>${l.replace('•', '').trim()}</li>`).join('');
                 container.innerHTML += `
-                    <div class="block" style="margin-bottom: 15px;">
-                        <div class="block-header" contenteditable="true" onblur="updateBlock(${i}, 'header', this.innerText)">${b.header}</div>
+                    <div class="block" style="margin-bottom: 20px;">
+                        <div class="block-header">
+                            <span contenteditable="true" onblur="updateBlock(${i}, 'header', this.innerText)">${b.header}</span>
+                        </div>
                         <ul class="logros-list" contenteditable="true" onblur="updateBlock(${i}, 'logros', this.innerText)">
                             ${bullets}
                         </ul>
@@ -191,26 +198,33 @@
                 })
             });
             const data = await response.json();
-            if(data.error) throw new Error(data.error.message);
             return JSON.parse(data.choices[0].message.content);
         }
 
+        // Funciones auxiliares
         function updateBlock(i, field, val) { userData.blocks[i][field] = val; localStorage.setItem('aivantage_data', JSON.stringify(userData)); }
         function deleteBlock(i) { userData.blocks.splice(i,1); renderAll(); }
-        function addManualBlock() { userData.blocks.unshift({header: "Empresa - Cargo (2026)", logros: "• Nuevo logro"}); renderAll(); }
+        function addManualBlock() { userData.blocks.unshift({header: "Empresa - Cargo (Año)", logros: "• Nuevo logro"}); renderAll(); }
         function openConfig() { document.getElementById('configModal').style.display='block'; }
         function closeConfig() { document.getElementById('configModal').style.display='none'; }
         function saveApiKey() { localStorage.setItem('ai_key', document.getElementById('apiKeyInput').value); closeConfig(); }
         function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText=m; }
-        function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+        function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; document.getElementById('voiceModal').style.display='none'; }
+        function closeVoiceModal() { document.getElementById('voiceModal').style.display='none'; hideLoading(); }
 
         async function decodificarJD() {
             const jd = document.getElementById('targetDesc').value;
-            showLoading("Analizando...");
+            showLoading("Analizando Vacante...");
             try {
-                const res = await callIA(`Analiza la vacante. JSON: {score:0, resumen_puesto:''}`, jd, 500);
+                const res = await callIA(`Analiza la JD. JSON: {score:0, resumen_puesto:'', nombres_alternativos:'', match_skills:[], gaps:[]}`, jd, 1000);
                 document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
+                document.getElementById('skillsContainer').innerHTML = `
+                    <div style="background:#eaf4f9; padding:10px; border-radius:5px; font-size:0.9em; margin-bottom:10px;">
+                        <strong>Rol:</strong> ${res.resumen_puesto}<br>
+                        <strong>Alias:</strong> ${res.nombres_alternativos}
+                    </div>
+                `;
             } catch(e) { alert(e.message); }
             hideLoading();
         }
