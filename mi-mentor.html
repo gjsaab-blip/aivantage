@@ -129,7 +129,7 @@
     </div>
 
     <script>
-        const API_KEY = "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";
+        const API_KEY = "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";
         let currentUser = "";
         let userData = { name: "", details: "", summary: "", blocks: [], edu: [], skills: [] };
         let recognition;
@@ -258,9 +258,12 @@
                     temperature: 0.3
                 })
             });
-            const data = await response.json();
-            if(!response.ok) throw new Error(data.error.message);
-            return JSON.parse(data.choices[0].message.content);
+            const textResponse = await response.text(); // Leemos primero como texto para no fallar si no es JSON
+if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${textResponse}`);
+}
+const data = JSON.parse(textResponse);
+return JSON.parse(data.choices[0].message.content);
         }
 
         function renderBlocks() {
