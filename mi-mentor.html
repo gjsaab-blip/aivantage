@@ -19,6 +19,38 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1200px; margin: auto; }
         .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+        
+        /* NUEVOS ESTILOS ENCABEZADO PERSONALIZADO */
+        .personal-data-container { text-align: center; border: none !important; margin-bottom: 30px !important; }
+        .input-name { 
+            border: none; 
+            outline: none; 
+            font-size: 26px; 
+            font-weight: 800; 
+            color: var(--ai-blue); 
+            width: 100%; 
+            text-align: center; 
+            text-transform: uppercase;
+            background: transparent;
+        }
+        .contact-row { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            margin-top: 10px; 
+            flex-wrap: wrap;
+        }
+        .input-contact { 
+            border: none; 
+            outline: none; 
+            font-size: 14px; 
+            color: #4a5568; 
+            background: transparent;
+            text-align: center;
+            min-width: 150px;
+        }
+        .input-contact:focus, .input-name:focus { border-bottom: 1px solid var(--ai-blue); }
+
         .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.05em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.9em; line-height: 1.7; white-space: pre-wrap; }
         
@@ -29,10 +61,8 @@
         .skill-lang { background: #fffaf0; color: #9c4221; border-color: #feebc8; }
         .skill-gap { background: #fff5f5; color: #c53030; border-color: #feb2b2; text-decoration: underline; }
 
-        /* REESTRUCTURACIÓN BOTONES ESQUINAS */
         .block-controls { justify-content: space-between; align-items: center; margin-bottom: 10px; }
 
-        /* REGLAS IMPRESIÓN / TEMPLATES */
         .section-title { text-transform: uppercase; font-weight: bold; font-size: 0.9em; color: gray; margin: 20px 0 10px 0; border-bottom: 1.5pt solid black; display: none; }
         .template-classic { font-family: 'Times New Roman', serif; }
         .template-modern { font-family: 'Inter', sans-serif; }
@@ -44,8 +74,8 @@
             .main-layout { display: block; width: 100%; padding: 0; }
             .block { border: none; margin-bottom: 10pt; padding: 0; }
             .section-title { display: block !important; color: black !important; font-size: 12pt !important; border-bottom: 1.5pt solid black !important; }
-            #printName { font-size: 22pt !important; font-weight: bold !important; text-transform: uppercase; display: block !important; text-align: center; color: black !important; border:none; width:100%; }
-            #printDetails { font-size: 10pt !important; display: block !important; text-align: center; border:none; width:100%; color: black !important; }
+            .input-name { font-size: 22pt !important; color: black !important; text-align: center; }
+            .input-contact { font-size: 10pt !important; color: black !important; }
         }
 
         @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; padding: 10px; } }
@@ -104,10 +134,15 @@
 
     <div id="mainLayout" class="main-layout">
         <div id="perfilView" class="template-modern">
-            <div id="personalDataHeader" class="block">
-                <input id="printName" placeholder="NOMBRE COMPLETO" onblur="updatePersonalData('name', this.value)">
-                <input id="printDetails" placeholder="Email | Teléfono | LinkedIn" onblur="updatePersonalData('details', this.value)">
+            <div id="personalDataHeader" class="block personal-data-container">
+                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO" onblur="updatePersonalData('name', this.value)">
+                <div class="contact-row">
+                    <input id="inputEmail" class="input-contact" placeholder="📧 Email" onblur="updatePersonalData('email', this.value)">
+                    <input id="inputPhone" class="input-contact" placeholder="📞 Teléfono" onblur="updatePersonalData('phone', this.value)">
+                    <input id="inputLinkedin" class="input-contact" placeholder="🔗 LinkedIn" onblur="updatePersonalData('linkedin', this.value)">
+                </div>
             </div>
+
             <div class="section-title">Resumen Ejecutivo</div>
             <div class="block">
                 <div class="block-controls"><span></span><button class="tool-btn btn-mic" onclick="startDeepDive('summary')"><i class="fas fa-microphone"></i></button></div>
@@ -129,9 +164,10 @@
     </div>
 
     <script>
-        const API_KEY = "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";
+        // RECUERDA: Generar clave nueva y no subirla a GitHub público
+        const API_KEY = "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"; 
         let currentUser = "";
-        let userData = { name: "", details: "", summary: "", blocks: [], edu: [], skills: [] };
+        let userData = { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [], edu: [], skills: [] };
         let recognition;
         let lastTranscript = "";
         let currentVoiceTarget = "";
@@ -258,12 +294,12 @@
                     temperature: 0.3
                 })
             });
-            const textResponse = await response.text(); // Leemos primero como texto para no fallar si no es JSON
-if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${textResponse}`);
-}
-const data = JSON.parse(textResponse);
-return JSON.parse(data.choices[0].message.content);
+            const textResponse = await response.text();
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${textResponse}`);
+            }
+            const data = JSON.parse(textResponse);
+            return JSON.parse(data.choices[0].message.content);
         }
 
         function renderBlocks() {
@@ -309,7 +345,9 @@ return JSON.parse(data.choices[0].message.content);
             if (saved) {
                 userData = JSON.parse(saved);
                 document.getElementById('printName').value = userData.name || "";
-                document.getElementById('printDetails').value = userData.details || "";
+                document.getElementById('inputEmail').value = userData.email || "";
+                document.getElementById('inputPhone').value = userData.phone || "";
+                document.getElementById('inputLinkedin').value = userData.linkedin || "";
             }
             renderAll();
         }
