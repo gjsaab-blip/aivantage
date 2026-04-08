@@ -68,7 +68,7 @@
             <p style="font-size: 0.8em; color: gray;">Introduce tu API Key de OpenAI para habilitar la IA.</p>
             <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;" placeholder="sk-proj-...">
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button class="tool-btn btn-primary" onclick="saveApiKey()">Guardar</button>
+              
                 <button class="tool-btn" onclick="closeSettings()">Cerrar</button>
             </div>
         </div>
@@ -130,7 +130,8 @@
         <button id="btnCombinar" class="tool-btn btn-primary" style="display:none" onclick="combinarBloques()"><i class="fas fa-object-group"></i> Combinar (IA)</button>
         <select id="outLang" class="tool-btn"><option value="es">ESP</option><option value="en">ENG</option></select>
         <button id="btnPreview" class="tool-btn" style="display:none; color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Previsualización</button>
-        <button class="tool-btn btn-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar CV Final</button>
+        <button class="tool-btn" style="color: var(--success); border-color: var(--success);" onclick="optimizarCVFinal()"><i class="fas fa-magic"></i> Optimizar para Vacante (IA)</button>
+<button class="tool-btn btn-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i> Imprimir PDF</button>
     </div>
 
     <div id="mainLayout" class="main-layout">
@@ -282,7 +283,11 @@
             showLoading("Generando propuesta...");
             const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
             try {
-                const res = await callIA(`Combina bloques. JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 1200);
+                // Aumentamos a 3000 tokens para asegurar que quepan todos los logros sin recortes
+const res = await callIA(`Une estos bloques de experiencia en uno solo. 
+Instrucción de Fase 1: Tu objetivo es UNIFICAR, no filtrar. Enlista TODOS los logros únicos. 
+Si dos logros mencionan proyectos o métricas diferentes, CONSÉRVALOS AMBOS.
+JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
                 pendingMerge = { result: res, indices: seleccionados };
                 document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${fixBulletPoints(res.logros).replace(/\n/g, '<br>')}`;
                 document.getElementById('mergeModal').style.display = 'flex';
@@ -359,7 +364,12 @@
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({
                     model: "gpt-4o",
-                    messages: [{ role: "system", content: `ERES GUSTAVO. Responde en ${lang}. JSON obligatorio. Logros con •. ` + sys }, { role: "user", content: usr }],
+                    messages: [{ role: "system", content: `ERES GUSTAVO, Líder de Estrategia con perfil técnico. Responde en ${lang}. JSON obligatorio.
+Reglas de Ingesta (Fase 1):
+1. PROHIBIDO RESUMIR: Si recibes 20 logros, devuelves 20 logros. No sintetices información distinta.
+2. VOZ HUMANA: Escribe siempre en primera persona del singular (ej: "Lideré", "Desarrollé").
+3. FIDELIDAD TÉCNICA: Mantén todas las métricas ($), herramientas y nombres de proyectos.
+4. FORMATO: Logros siempre con el símbolo • seguido de un espacio. ` + sys }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
                     max_tokens: tokens, temperature: 0.3
                 })
@@ -368,7 +378,47 @@
             if (!response.ok) throw new Error("Error en IA");
             return JSON.parse(data.choices[0].message.content);
         }
+async function optimizarCVFinal() {
+    const jd = document.getElementById('targetDesc').value;
+    if(!jd) { alert("Por favor, pega una vacante (JD) en el analizador primero."); return; }
+    
+    saveHistory(); // Esto permite que el botón "Deshacer" funcione para recuperar tu historial completo después de imprimir
+    showLoading("Aplicando Método XYZ y Optimización ATS...");
+    
+    const perfilActual = {
+        summary: userData.summary,
+        blocks: userData.blocks,
+        skills: userData.skills
+    };
 
+    try {
+        const res = await callIA(`ESTRATEGA DE RRHH / MÉTODO GOOGLE XYZ.
+        Tu objetivo es REESCRIBIR el CV para que haga match perfecto con la JD.
+        
+        REGLAS DE ORO FASE 3:
+        1. MÉTODO XYZ: Cada logro debe ser "[Acción Técnica] + [Métrica/Contexto] + [Resultado Impactante]".
+        2. VOZ DE AUTORIDAD: Usa la primera persona, tono senior, sin adjetivos vacíos.
+        3. SELECCIÓN ATS: Selecciona los logros más relevantes para la JD.
+        4. ELEVATOR PITCH: El resumen debe ser un gancho de impacto inmediato siguiendo: [Rol] + [Empresas Top] + [Stack] + [Hito].
+        
+        JSON: {summary:'', blocks:[{header:'', logros:''}], skills:[{name:'', type:''}]}`, 
+        `JD: ${jd} \n\n PERFIL: ${JSON.stringify(perfilActual)}`, 2500);
+
+        // Esto cambia la vista a la versión optimizada para la empresa
+        userData.summary = res.summary;
+        userData.blocks = res.blocks.map(b => ({
+            header: b.header,
+            logros: fixBulletPoints(b.logros)
+        }));
+        userData.skills = res.skills;
+        
+        renderAll();
+        alert("CV Optimizado para la vacante. Ahora puedes revisar y generar el PDF.");
+    } catch(e) { 
+        alert("Error en optimización: " + e.message); 
+    }
+    hideLoading();
+}
         function renderBlocks() {
             const expCont = document.getElementById('blocksExp');
             expCont.innerHTML = userData.blocks.map((b, i) => `
