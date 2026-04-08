@@ -77,7 +77,7 @@
     <div id="mergeModal" class="modal-overlay">
         <div class="modal-content" style="width: 550px;">
             <h4 style="margin-top:0; color: var(--ai-blue);">Revisar Combinación</h4>
-            <div id="mergePreview" style="text-align:left; font-size:0.85em; background:#f9f9f9; padding:15px; border-radius:8px; max-height:250px; overflow-y:auto; border: 1px solid var(--border);"></div>
+            <div id="mergePreview" contenteditable="true" style="text-align:left; font-size:0.85em; background:#f9f9f9; padding:15px; border-radius:8px; max-height:250px; overflow-y:auto; border: 1px solid var(--border); outline: none;"></div>
             <p style="font-size:0.75em; color:gray; margin-top:10px;">¿Deseas reemplazar los bloques originales por esta versión?</p>
             <div style="display:flex; gap:10px; justify-content:center;">
                 <button class="tool-btn btn-primary" onclick="confirmMerge()">Aceptar</button>
@@ -291,11 +291,28 @@
         }
 
         function confirmMerge() {
-            saveHistory();
-            pendingMerge.indices.sort((a,b) => b-a).forEach(idx => userData.blocks.splice(idx, 1));
-            userData.blocks.unshift({ header: pendingMerge.result.header, logros: fixBulletPoints(pendingMerge.result.logros) });
-            closeMergeModal(); guardar(); renderAll();
-        }
+    saveHistory();
+    // Captura el contenido editado manualmente en el modal
+    const editedContent = document.getElementById('mergePreview').innerText;
+    
+    // Divide el contenido: la primera línea es el encabezado, el resto son los logros
+    const lines = editedContent.split('\n');
+    const newHeader = lines[0] || pendingMerge.result.header;
+    const newLogros = lines.slice(1).join('\n').trim() || "";
+
+    // Elimina los bloques originales seleccionados
+    pendingMerge.indices.sort((a,b) => b-a).forEach(idx => userData.blocks.splice(idx, 1));
+    
+    // Inserta el nuevo bloque con el texto corregido por el usuario
+    userData.blocks.unshift({ 
+        header: newHeader, 
+        logros: fixBulletPoints(newLogros) 
+    });
+    
+    closeMergeModal(); 
+    guardar(); 
+    renderAll();
+}
 
         function closeMergeModal() { document.getElementById('mergeModal').style.display = 'none'; pendingMerge = null; }
 
