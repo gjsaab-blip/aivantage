@@ -288,7 +288,11 @@
             const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
             try {
                 const res = await callIA(`Une estos bloques. 
-                Regla: NO resumas. Lista cada logro en una línea nueva con viñeta.
+                REGLAS ESTRICTAS DE UNIFICACIÓN:
+                1. PROHIBIDO RESUMIR O FILTRAR: Extrae y lista TODOS los logros individuales.
+                2. PRESERVACIÓN DE VOLUMEN: El bloque resultante debe ser proporcional a la suma de los originales.
+                3. DEDUPLICACIÓN INTELIGENTE: Si un logro es EXACTAMENTE idéntico en texto y significado, inclúyelo una vez. Pero si hay métricas o detalles diferentes, MANTÉN AMBOS como puntos separados.
+                4. NO AGRUPAR: No sintetices ideas distintas en un solo punto.
                 JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
                 pendingMerge = { result: res, indices: seleccionados };
                 const logrosOrdenados = fixBulletPoints(res.logros);
