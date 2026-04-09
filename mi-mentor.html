@@ -9,7 +9,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
     <style>
         :root { --ai-blue: #005587; --ai-light-blue: #eaf4f9; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; --danger: #e53e3e; --success: #2f855a; --warning: #c05621; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); transition: all 0.3s; }
+        
+        /* ESTRUCTURA BASE */
         .navbar, .toolbar, .tabs, .target-panel, .block-controls, .tool-btn, .tab, #userSelector { display: flex; }
         .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); display: none; gap: 10px; align-items: center; position: sticky; top: 72px; z-index: 99; flex-wrap: wrap; }
@@ -17,84 +19,75 @@
         .btn-primary { background: var(--ai-blue) !important; color: white !important; border: none; }
         .btn-mic.recording { background: var(--danger) !important; color: white !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        
+
+        /* MODALES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 450px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1200px; margin: auto; }
+        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1250px; margin: auto; }
         .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         
-        /* Estilos de Plantillas Estructurales */
-        .template-classic .main-layout { grid-template-columns: 1fr; }
-        .template-classic .personal-data-container { text-align: left; border-bottom: 2pt solid black !important; padding-bottom: 10px; }
-        .template-minimal { font-family: 'Georgia', serif; }
-        .template-minimal .block { border: none; border-left: 1px solid var(--border); border-radius: 0; }
-
-        .personal-data-container { text-align: center; border: none !important; margin-bottom: 30px !important; }
-        .input-name { border: none; outline: none; font-size: 26px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
+        /* INPUTS DE EDICIÓN */
+        .input-name { border: none; outline: none; font-size: 28px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
         .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
         .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; min-width: 150px; }
+        .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.1em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
+        .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; }
 
-        .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.05em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
-        .editable-area { outline: none; min-height: 20px; font-size: 0.9em; line-height: 1.7; white-space: pre-wrap; }
+        /* FORMATOS DE SALIDA (ESTILO CV) */
+        #perfilView.preview-mode { background: white; padding: 0; border-radius: 0; box-shadow: none; width: 21cm; min-height: 29.7cm; margin: auto; padding: 1.5cm; }
+        .preview-mode .block { border: none !important; padding: 0 !important; margin-bottom: 1.2rem !important; }
+        .preview-mode .block-controls, .preview-mode .btn-mic, .preview-mode .fa-trash, .preview-mode .merge-check { display: none !important; }
+        .preview-mode .section-title { display: block !important; border-bottom: 1.5pt solid #333; margin-bottom: 10px; font-size: 11pt; color: #333; text-transform: uppercase; font-weight: 900; }
+
+        /* PLANTILLA ATS-HÍBRIDO (Basado en Referencia) */
+        .template-ats-hibrido.preview-mode { font-family: 'Arial', sans-serif; }
+        .template-ats-hibrido.preview-mode .input-name { color: black !important; font-size: 22pt !important; }
+        .template-ats-hibrido.preview-mode .input-header { color: black !important; font-size: 12pt !important; text-transform: uppercase; margin-bottom: 2px; }
         
-        .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; margin: 2px; display: inline-block; border: 1px solid transparent; }
-        .skill-tech { background: #ebf8ff; color: #2b6cb0; border-color: #bee3f8; }
-        .skill-soft { background: #f0fff4; color: #2f855a; border-color: #c6f6d5; }
-        .skill-gap { background: #fff5f5; color: #c53030; border-color: #feb2b2; text-decoration: underline; }
+        /* PLANTILLA EJECUTIVA (Moderna) */
+        .template-ejecutiva.preview-mode { font-family: 'Inter', sans-serif; color: #1a202c; }
+        .template-ejecutiva.preview-mode .section-title { color: var(--ai-blue); border-bottom-color: var(--ai-blue); }
 
-        .block-controls { justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .section-title { text-transform: uppercase; font-weight: bold; font-size: 0.9em; color: gray; margin: 20px 0 10px 0; border-bottom: 1.5pt solid black; display: none; }
-
-        /* CAPA DE INVISIBILIDAD - IMPRESIÓN PROFESIONAL */
-        @media print {
-            @page { margin: 1cm; size: A4; }
-            .navbar, .toolbar, .tabs, .target-panel, .block-controls, .tool-btn, #loadingOverlay, .merge-check, .modal-overlay, .btn-mic, #btnPreview, .fas, .fa-trash { display: none !important; }
-            body { background: white; padding: 0; color: black; }
-            .main-layout { display: block; width: 100%; padding: 0; margin: 0; }
-            .block { border: none; margin-bottom: 12pt; padding: 0; page-break-inside: avoid; }
-            .section-title { display: block !important; color: black !important; font-size: 12pt !important; border-bottom: 1.5pt solid black !important; margin-top: 15pt; }
-            .input-name { font-size: 24pt !important; color: black !important; text-align: center; font-weight: 900; }
-            .input-contact { font-size: 10pt !important; color: black !important; border: none; }
-            .editable-area { font-size: 10pt !important; color: black !important; }
-            input, textarea { border: none !important; }
-        }
-
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
+        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
     <div id="loadingOverlay">
-        <i class="fas fa-cog fa-spin" style="font-size: 3em; color: var(--ai-blue);"></i>
-        <p id="loadingStatus" style="margin-top: 15px; font-weight: 700;">AiVantage: Procesando Inteligencia...</p>
+        <i class="fas fa-circle-notch fa-spin" style="font-size: 3em; color: var(--ai-blue);"></i>
+        <p id="loadingStatus" style="margin-top: 15px; font-weight: 700;">AiVantage: Generando CV de Élite...</p>
     </div>
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color: var(--ai-blue); margin-top: 0;">Configuración SaaS</h3>
-            <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;" placeholder="OpenAI API Key">
-            <div style="display: flex; gap: 10px; justify-content: center;">
+            <h3 style="color: var(--ai-blue);">SaaS Key Config</h3>
+            <input type="password" id="apiKeyInput" style="width: 90%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="sk-...">
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top:15px;">
                 <button class="tool-btn btn-primary" onclick="saveApiKey()">Guardar</button>
                 <button class="tool-btn" onclick="closeSettings()">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <div id="mergeModal" class="modal-overlay">
-        <div class="modal-content" style="width: 550px;">
-            <h4 style="margin-top:0; color: var(--ai-blue);">Unificación Estratégica</h4>
-            <div id="mergePreview" contenteditable="true" style="text-align:left; font-size:0.85em; background:#f9f9f9; padding:15px; border-radius:8px; max-height:250px; overflow-y:auto; border: 1px solid var(--border); outline: none;"></div>
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
-                <button class="tool-btn btn-primary" onclick="confirmMerge()">Aceptar Cambio</button>
-                <button class="tool-btn" onclick="closeMergeModal()">Cancelar</button>
+    <div id="voiceModal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 style="color: var(--ai-blue);">Deep Dive: Transcripción Detectada</h4>
+            <p id="voicePreview" style="font-size:0.85em; background:#f7fafc; padding:15px; border-radius:8px; border:1px solid var(--border); text-align:left;"></p>
+            <div id="voiceTargetSelection" style="text-align:left; margin-top:15px;">
+                <label style="font-size:0.75em; font-weight:800; color:gray;">DESTINO DE LA EXPERIENCIA:</label>
+                <div id="voiceOptionsList" style="max-height:150px; overflow-y:auto; margin-top:10px; border:1px solid var(--border); padding:10px; border-radius:8px;"></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <button class="tool-btn btn-primary" onclick="processVoiceAction()">Procesar e Insertar</button>
+                <button class="tool-btn" onclick="closeVoiceModal()">Cancelar</button>
             </div>
         </div>
     </div>
 
     <nav class="navbar">
-        <div style="font-weight: 800; color: var(--ai-blue); font-size: 1.3em;">AiVantage <span style="font-size:0.5em; vertical-align:middle; border:1px solid; padding:2px 5px; border-radius:4px;">HR SAAS</span></div>
-        <div id="matchScoreDisplay" style="display:none; font-weight:800; padding:5px 15px; border-radius:20px; background:var(--ai-light-blue);">Match: --%</div>
+        <div style="font-weight: 900; color: var(--ai-blue); font-size: 1.4em; letter-spacing: -1px;">AiVantage</div>
+        <div id="matchScoreDisplay" style="display:none; font-weight:900; padding:6px 16px; border-radius:20px; background:var(--ai-light-blue); color:var(--ai-blue);">Match: --%</div>
         <div style="display: flex; align-items: center; gap: 20px;">
             <div id="userDisplay" style="font-weight: 700; color: gray;"></div>
             <i class="fas fa-cog" style="cursor: pointer; color: gray;" onclick="openSettings()"></i>
@@ -102,56 +95,55 @@
     </nav>
 
     <div id="userSelector" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
-        <h2>Intelligence Center</h2>
-        <div style="display: flex; gap: 20px;">
-            <div onclick="selectUser('Gustavo')" style="background:white; padding:30px; border-radius:15px; border:1px solid var(--border); text-align:center; width:150px; cursor:pointer;"><i class="fas fa-user-tie" style="font-size: 2.5em; color: var(--ai-blue);"></i><h3>Gustavo</h3></div>
+        <h2 style="margin-bottom:30px;">Selecciona tu Perfil Maestro</h2>
+        <div style="display: flex; gap: 25px;">
+            <div onclick="selectUser('Gustavo')" style="background:white; padding:40px; border-radius:20px; border:1px solid var(--border); text-align:center; width:160px; cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"><i class="fas fa-user-tie" style="font-size: 3em; color: var(--ai-blue);"></i><h3>Gustavo</h3></div>
+            <div onclick="selectUser('Invitado')" style="background:white; padding:40px; border-radius:20px; border:1px solid var(--border); text-align:center; width:160px; cursor:pointer;"><i class="fas fa-user-plus" style="font-size: 3em; color: #cbd5e0;"></i><h3>Invitado</h3></div>
         </div>
     </div>
 
     <div id="toolbar" class="toolbar">
-        <button id="btnUndo" class="tool-btn" style="display:none; color: var(--danger); border-color: var(--danger);" onclick="undo()"><i class="fas fa-undo"></i> Undo</button>
+        <button id="btnUndo" class="tool-btn" style="display:none; color: var(--danger); border-color: var(--danger);" onclick="undo()"><i class="fas fa-undo"></i> Deshacer</button>
+        <button class="tool-btn btn-mic" id="btnDeepDiveGeneral" onclick="startDeepDive('general')"><i class="fas fa-microphone"></i> Deep Dive (Voz)</button>
         <select id="templateSelector" class="tool-btn" onchange="applyTemplate(this.value)">
-            <option value="template-modern">Formato Cronológico</option>
-            <option value="template-classic">Formato Híbrido (ATS)</option>
-            <option value="template-minimal">Formato Funcional</option>
+            <option value="template-ats-hibrido">Formato ATS Híbrido (Pro)</option>
+            <option value="template-ejecutiva">Formato Ejecutivo Moderno</option>
+            <option value="template-minimal">Formato Minimalista Humano</option>
         </select>
-        <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar Experiencia</button>
+        <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Importar Trayectoria</button>
         <input type="file" id="fileInput" style="display:none" accept=".pdf,.docx" multiple onchange="handleFileUpload(event)">
         <button id="btnCombinar" class="tool-btn btn-primary" style="display:none" onclick="combinarBloques()"><i class="fas fa-object-group"></i> Unificar Bloques</button>
-        <select id="outLang" class="tool-btn"><option value="es">ESP</option><option value="en">ENG</option></select>
-        <button id="btnPreview" class="tool-btn" style="display:none; color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa PDF</button>
-        <button class="tool-btn btn-primary" onclick="optimizarCVFinal()"><i class="fas fa-magic"></i> FASE 3: Optimizar ATS</button>
-        <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar CV Final</button>
+        <button id="btnPreviewToggle" class="tool-btn" style="color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa Profesional</button>
+        <button class="tool-btn btn-primary" onclick="optimizarCVFinal()"><i class="fas fa-bolt"></i> Fase 3: Optimización Real</button>
+        <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-print"></i> Generar PDF</button>
     </div>
 
     <div id="mainLayout" class="main-layout">
-        <div id="perfilView" class="template-modern">
+        <div id="perfilView" class="template-ats-hibrido">
             <div id="personalDataHeader" class="block personal-data-container">
-                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO">
+                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO" onblur="updatePersonalData('name', this.value)">
                 <div class="contact-row">
-                    <input id="inputEmail" class="input-contact" placeholder="📧 Email">
-                    <input id="inputPhone" class="input-contact" placeholder="📞 Teléfono">
-                    <input id="inputLinkedin" class="input-contact" placeholder="🔗 LinkedIn">
+                    <input id="inputEmail" class="input-contact" placeholder="Email" onblur="updatePersonalData('email', this.value)">
+                    <input id="inputPhone" class="input-contact" placeholder="Teléfono" onblur="updatePersonalData('phone', this.value)">
+                    <input id="inputLinkedin" class="input-contact" placeholder="LinkedIn" onblur="updatePersonalData('linkedin', this.value)">
                 </div>
             </div>
 
-            <div class="section-title">Perfil Estratégico</div>
+            <div class="section-title">Resumen Ejecutivo</div>
             <div class="block">
-                <div id="summaryArea" class="editable-area" contenteditable="true"></div>
+                <div class="block-controls"><span></span><button class="tool-btn btn-mic" onclick="startDeepDive('summary')"><i class="fas fa-microphone"></i></button></div>
+                <div id="summaryArea" class="editable-area" contenteditable="true" onblur="updateProfileData('summary', this.innerText)"></div>
             </div>
+            
             <div class="section-title">Experiencia Profesional</div><div id="blocksExp"></div>
-            <div class="section-title">Formación</div><div id="blocksEdu"></div>
+            <div class="section-title">Educación y Formación</div><div id="blocksEdu"></div>
         </div>
 
         <div id="targetPanel" class="target-panel" style="flex-direction: column; gap: 15px;">
             <div class="block">
-                <div style="font-size: 0.7em; font-weight: 800; color: var(--ai-blue); margin-bottom: 8px;">DECODIFICADOR DE VACANTE</div>
-                <textarea id="targetDesc" style="width:100%; height:120px; border:1px solid var(--border); border-radius:8px; font-size:0.8em; padding:8px;" placeholder="Pega la JD completa..."></textarea>
-                <button style="width:100%; margin-top:10px; padding:10px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;" onclick="decodificarJD()">Analizar Mercado y Perfil</button>
-            </div>
-            <div id="marketInsights" style="display:none;" class="block">
-                <div style="font-size: 0.7em; font-weight: 800; color: var(--warning);">INSIGHTS DE MERCADO</div>
-                <div id="roleDetails" style="font-size:0.75em; margin-top:10px; line-height:1.4;"></div>
+                <div style="font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-bottom: 8px;">TARGET: JOB DESCRIPTION</div>
+                <textarea id="targetDesc" style="width:100%; height:120px; border:1px solid var(--border); border-radius:8px; font-size:0.85em; padding:10px;" placeholder="Pega aquí la vacante..."></textarea>
+                <button style="width:100%; margin-top:10px; padding:10px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;" onclick="decodificarJD()">Analizar Match Estratégico</button>
             </div>
             <div id="skillsContainer"></div>
             <div id="gapAlert" style="display:none; padding:12px; background:#fff5f5; border-radius:8px; border:1px solid #feb2b2; font-size:0.8em; color:#c53030;"></div>
@@ -162,7 +154,18 @@
         let currentUser = "";
         let userData = { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [], edu: [], skills: [] };
         let lastState = null;
-        let pendingMerge = null;
+        let isPreviewMode = false;
+        let recognition;
+        let lastTranscript = "";
+        let currentVoiceTarget = "";
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.lang = 'es-ES';
+            recognition.onresult = (event) => { for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) lastTranscript += event.results[i][0].transcript; } };
+        }
 
         function fixBulletPoints(text) {
             if (!text) return "• ";
@@ -171,96 +174,140 @@
             return lineas.map(l => l.startsWith('• ') ? l : '• ' + l).join('\n');
         }
 
-        function saveHistory() { lastState = JSON.parse(JSON.stringify(userData)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
-        function undo() { if (lastState) { userData = JSON.parse(JSON.stringify(lastState)); lastState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
+        function togglePreview() {
+            isPreviewMode = !isPreviewMode;
+            const view = document.getElementById('perfilView');
+            const panel = document.getElementById('targetPanel');
+            const toggleBtn = document.getElementById('btnPreviewToggle');
 
-        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; document.getElementById('apiKeyInput').value = localStorage.getItem('aivantage_api_key') || ""; }
-        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-        function saveApiKey() { localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); closeSettings(); }
+            if (isPreviewMode) {
+                view.classList.add('preview-mode');
+                panel.style.display = 'none';
+                document.getElementById('mainLayout').style.gridTemplateColumns = '1fr';
+                toggleBtn.innerHTML = '<i class="fas fa-edit"></i> Volver a Editar';
+                // Inyectar saltos de página para PDF
+                document.querySelectorAll('.section-title').forEach(el => el.style.pageBreakBefore = 'auto');
+            } else {
+                view.classList.remove('preview-mode');
+                panel.style.display = 'flex';
+                document.getElementById('mainLayout').style.gridTemplateColumns = '1fr 380px';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Vista Previa Profesional';
+            }
+        }
 
-        async function decodificarJD() {
-            const jd = document.getElementById('targetDesc').value;
-            if(!jd) return;
-            showLoading("Ejecutando Análisis SaaS...");
-            try {
-                const res = await callIA(`ACTÚA COMO UN SAAS DE HR DE ÉLITE Y CONSULTOR ATS.
-                Analiza la JD y mi perfil. JSON obligatorio:
-                {
-                  "score": 0,
-                  "alternate_titles": [],
-                  "day_in_the_life": "",
-                  "role_summary_simple": "",
-                  "top_skills": [{"name":"", "type":"tech"}],
-                  "gap_skills": [{"name":"", "advice":""}]
-                }
-                REGLA: El score debe ser un cálculo real basado en densidad de palabras clave.`, 
-                `PERFIL: ${userData.summary} \n\n JD: ${jd}`, 2000);
-
-                document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
-                document.getElementById('matchScoreDisplay').style.display = 'block';
-                document.getElementById('marketInsights').style.display = 'block';
-                document.getElementById('roleDetails').innerHTML = `
-                    <strong>Nombres alternativos:</strong> ${res.alternate_titles.join(', ')}<br><br>
-                    <strong>Día a día:</strong> ${res.day_in_the_life}<br><br>
-                    <strong>En resumen:</strong> ${res.role_summary_simple}
-                `;
-                
-                let sHtml = "";
-                res.top_skills.forEach(s => sHtml += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
-                document.getElementById('skillsContainer').innerHTML = sHtml;
-                
-                if(res.gap_skills.length > 0) {
-                    document.getElementById('gapAlert').style.display = 'block';
-                    document.getElementById('gapAlert').innerHTML = "<strong>GAPS DETECTADOS (ATS):</strong><br>" + res.gap_skills.map(g => `• ${g.name}: ${g.advice}`).join('<br>');
-                }
-                document.getElementById('btnPreview').style.display = 'inline-flex';
-            } catch(e) { alert(e.message); }
-            hideLoading();
+        function applyTemplate(cls) {
+            const view = document.getElementById('perfilView');
+            view.className = cls + (isPreviewMode ? ' preview-mode' : '');
         }
 
         async function optimizarCVFinal() {
             const jd = document.getElementById('targetDesc').value;
-            if(!jd) { alert("Pega la JD en el decodificador primero."); return; }
-            saveHistory();
-            showLoading("Fase 3: Curación y Método XYZ...");
+            if(!jd) { alert("Pega la JD primero para optimizar."); return; }
+            showLoading("Fase 3: Ejecutando Curación y Método XYZ...");
             try {
-                const res = await callIA(`ESTRATEGA DE CV / FILTRO ATS / MÉTODO GOOGLE XYZ.
-                TAREA: Selecciona de mi experiencia solo lo que hace match con la JD.
-                REGLAS:
-                1. CURACIÓN: Elimina logros irrelevantes.
-                2. MÉTODO XYZ: Reescribe cada logro como: [Acción Técnica] + [Métrica/Contexto] + [Resultado].
-                3. TONO: Alinea el resumen ejecutivo a la cultura de la empresa en la JD.
-                JSON: { "summary": "", "blocks": [{"header":"", "logros":""}] }`, 
-                `JD: ${jd} \n\n PERFIL MAESTRO: ${JSON.stringify(userData.blocks)}`, 3000);
+                const res = await callIA(`ACTÚA COMO ESTRATEGA DE CV NIVEL GOOGLE. 
+                1. Selecciona solo logros de la experiencia que tengan match con la JD.
+                2. Reescribe bajo Método XYZ: Acción + Métrica + Impacto.
+                3. Agrupa Skills por categorías: Tech y Soft.
+                JSON: { "summary": "", "blocks": [{"header":"", "logros":""}], "skills": [{"name":"", "type":"tech"}] }`, 
+                `JD: ${jd} \n\n PERFIL: ${JSON.stringify(userData)}`, 3000);
                 
+                saveHistory();
                 userData.summary = res.summary;
                 userData.blocks = res.blocks.map(b => ({ header: b.header, logros: fixBulletPoints(b.logros) }));
+                userData.skills = res.skills;
                 renderAll();
-                alert("CV Optimizado para ATS. Revisa en 'Vista Previa'.");
-            } catch(e) { alert(e.message); }
+                if(!isPreviewMode) togglePreview();
+            } catch(e) { alert("Error IA: " + e.message); }
             hideLoading();
         }
 
-        async function combinarBloques() {
-            const seleccionados = Array.from(document.querySelectorAll('.merge-check:checked')).map(cb => parseInt(cb.dataset.index));
-            showLoading("Deduplicando con Inteligencia...");
-            const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
-            const res = await callIA(`UNE SIN PERDER DATOS.
-                Reglas: 1. No resumas. 2. Si son idénticos, une. 3. Si varían métricas o herramientas, MANTÉN AMBOS.
-                JSON: { "header": "", "logros": "" }`, JSON.stringify(dataToMerge), 3000);
-            pendingMerge = { result: res, indices: seleccionados };
-            document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${fixBulletPoints(res.logros).replace(/\n/g, '<br>')}`;
-            document.getElementById('mergeModal').style.display = 'flex';
+        function startDeepDive(target) {
+            currentVoiceTarget = target;
+            const btn = event.currentTarget;
+            if (btn.classList.contains('recording')) {
+                recognition.stop();
+                btn.classList.remove('recording');
+                setTimeout(() => { if(lastTranscript.trim()) showVoiceDecision(); }, 500);
+            } else {
+                lastTranscript = "";
+                recognition.start();
+                btn.classList.add('recording');
+            }
+        }
+
+        function showVoiceDecision() {
+            document.getElementById('voicePreview').innerText = `"${lastTranscript}"`;
+            const list = document.getElementById('voiceOptionsList');
+            list.innerHTML = `
+                <div style="margin-bottom:10px;">
+                    <input type="radio" name="vTarget" value="new" id="vNew" checked>
+                    <label for="vNew" style="font-size:0.85em;"><strong>Crear Nuevo Bloque</strong> (IA sugiere título)</label>
+                </div>
+                <hr style="border:0.5px solid var(--border); margin:10px 0;">
+                <label style="font-size:0.75em; color:gray; display:block; margin-bottom:5px;">AÑADIR A EXISTENTES:</label>
+            `;
+            userData.blocks.forEach((b, i) => {
+                list.innerHTML += `<div style="margin-bottom:4px;"><input type="checkbox" name="vTargetExist" value="${i}" id="vExist${i}"> <label for="vExist${i}" style="font-size:0.85em;">${b.header || 'Sin Título'}</label></div>`;
+            });
+            document.getElementById('voiceModal').style.display = 'flex';
+        }
+
+        async function processVoiceAction() {
+            const isNew = document.getElementById('vNew').checked;
+            const selectedIndices = Array.from(document.querySelectorAll('input[name="vTargetExist"]:checked')).map(cb => parseInt(cb.value));
+            closeVoiceModal();
+            showLoading("IA Redactando con métricas...");
+            try {
+                const res = await callIA(`Transforma este audio en logros profesionales (viñetas •).
+                Si es nuevo, genera un "header" ejecutivo.
+                JSON: { "header": "", "logros": "" }`, lastTranscript, 800);
+                saveHistory();
+                if (isNew) userData.blocks.unshift({ header: res.header, logros: fixBulletPoints(res.logros) });
+                selectedIndices.forEach(idx => {
+                    userData.blocks[idx].logros += "\n" + res.logros;
+                    userData.blocks[idx].logros = fixBulletPoints(userData.blocks[idx].logros);
+                });
+                renderAll(); guardar();
+            } catch(e) { console.error(e); }
             hideLoading();
         }
 
-        function confirmMerge() {
-            saveHistory();
-            pendingMerge.indices.sort((a,b) => b-a).forEach(idx => userData.blocks.splice(idx, 1));
-            userData.blocks.unshift({ header: pendingMerge.result.header, logros: fixBulletPoints(document.getElementById('mergePreview').innerText) });
-            closeMergeModal(); renderAll(); guardar();
+        function renderBlocks() {
+            document.getElementById('blocksExp').innerHTML = userData.blocks.map((b, i) => `
+                <div class="block">
+                    <div class="block-controls">
+                        <input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()">
+                        <div style="display:flex; gap:8px;">
+                            <button class="tool-btn btn-mic" onclick="startDeepDive(${i})"><i class="fas fa-microphone"></i></button>
+                            <i class="fas fa-trash" style="cursor:pointer; color:#cbd5e0;" onclick="deleteItem('blocks', ${i})"></i>
+                        </div>
+                    </div>
+                    <input class="input-header" value="${b.header || ''}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
+                    <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${fixBulletPoints(b.logros)}</div>
+                </div>`).join('');
+            
+            document.getElementById('blocksEdu').innerHTML = userData.edu.map((e, i) => `
+                <div class="block">
+                    <div class="block-controls"><span></span><i class="fas fa-trash" onclick="deleteItem('edu', ${i})"></i></div>
+                    <input class="input-header" value="${e.header || ''}" onblur="updateItem('edu', ${i}, 'header', this.value)">
+                    <div class="editable-area" contenteditable="true" onblur="updateItem('edu', ${i}, 'detalle', this.innerText)">${e.detalle || ''}</div>
+                </div>`).join('');
+            toggleMergeBtn();
         }
 
+        function selectUser(name) {
+            currentUser = name;
+            document.getElementById('userSelector').style.display = 'none';
+            document.getElementById('toolbar').style.display = 'flex';
+            document.getElementById('mainLayout').style.display = 'grid';
+            document.getElementById('userDisplay').innerText = currentUser;
+            const saved = localStorage.getItem('aivantage_' + currentUser);
+            if (saved) { userData = JSON.parse(saved); document.getElementById('printName').value = userData.name || ""; }
+            renderAll();
+        }
+
+        // --- Funciones de Utilidad (Mantenidas íntegras) ---
         async function callIA(sys, usr, tokens) {
             const key = localStorage.getItem('aivantage_api_key');
             if(!key) throw new Error("API Key faltante");
@@ -269,7 +316,7 @@
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({
                     model: "gpt-4o",
-                    messages: [{ role: "system", content: sys }, { role: "user", content: usr }],
+                    messages: [{ role: "system", content: sys + ". Responde solo JSON." }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
                     max_tokens: tokens, temperature: 0.2
                 })
@@ -278,37 +325,24 @@
             return JSON.parse(data.choices[0].message.content);
         }
 
-        function applyTemplate(cls) { document.getElementById('perfilView').className = cls; }
-        function togglePreview() { 
-            const panel = document.getElementById('targetPanel');
-            const isHidden = panel.style.display === 'none';
-            panel.style.display = isHidden ? 'flex' : 'none';
-            document.querySelectorAll('.block-controls, .navbar, .fa-trash').forEach(el => el.style.display = isHidden ? 'flex' : 'none');
-        }
-
-        function renderBlocks() {
-            document.getElementById('blocksExp').innerHTML = userData.blocks.map((b, i) => `
-                <div class="block">
-                    <div class="block-controls"><input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()"><i class="fas fa-trash" onclick="deleteItem('blocks', ${i})" style="cursor:pointer; color:gray;"></i></div>
-                    <input class="input-header" value="${b.header}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
-                    <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${fixBulletPoints(b.logros)}</div>
-                </div>`).join('');
-            document.getElementById('blocksEdu').innerHTML = userData.edu.map((e, i) => `
-                <div class="block"><div class="block-controls"><span></span><i class="fas fa-trash" onclick="deleteItem('edu', ${i})"></i></div>
-                <input class="input-header" value="${e.header}" onblur="updateItem('edu', ${i}, 'header', this.value)"><div class="editable-area" contenteditable="true">${e.detalle}</div></div>`).join('');
-            toggleMergeBtn();
-        }
-
-        function selectUser(name) {
-            currentUser = name; document.getElementById('userSelector').style.display = 'none';
-            document.getElementById('toolbar').style.display = 'flex'; document.getElementById('mainLayout').style.display = 'grid';
-            const saved = localStorage.getItem('aivantage_' + currentUser);
-            if(saved) { userData = JSON.parse(saved); document.getElementById('printName').value = userData.name; }
-            renderAll();
-        }
+        function updatePersonalData(f, v) { userData[f] = v; guardar(); }
+        function updateProfileData(f, v) { userData[f] = v; guardar(); }
+        function updateItem(l, i, f, v) { userData[l][i][f] = v; guardar(); }
+        function deleteItem(l, i) { saveHistory(); userData[l].splice(i,1); renderBlocks(); guardar(); }
+        function saveHistory() { lastState = JSON.parse(JSON.stringify(userData)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
+        function undo() { if (lastState) { userData = JSON.parse(JSON.stringify(lastState)); lastState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
+        function renderAll() { renderBlocks(); document.getElementById('summaryArea').innerText = userData.summary || ""; }
+        function guardar() { localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
+        function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText = m; }
+        function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+        function closeVoiceModal() { document.getElementById('voiceModal').style.display = 'none'; }
+        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; document.getElementById('apiKeyInput').value = localStorage.getItem('aivantage_api_key') || ""; }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+        function saveApiKey() { localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); closeSettings(); }
+        function toggleMergeBtn() { document.getElementById('btnCombinar').style.display = document.querySelectorAll('.merge-check:checked').length >= 2 ? 'inline-flex' : 'none'; }
 
         async function handleFileUpload(event) {
-            showLoading("Ingesta de Datos Maestro...");
+            showLoading("Procesando archivos...");
             const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = async function() {
@@ -317,21 +351,12 @@
                     const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
                     for(let i=1; i<=pdf.numPages; i++){ const p = await pdf.getPage(i); const c = await p.getTextContent(); text += c.items.map(it => it.str).join(" "); }
                 } else { const res = await mammoth.extractRawText({arrayBuffer: this.result}); text = res.value; }
-                const res = await callIA("Extrae experiencia profesional íntegra. JSON: {blocks:[{header:'', logros:''}]}", text, 2500);
+                const res = await callIA("Extrae experiencia profesional completa. JSON: {blocks:[{header:'', logros:''}]}", text, 2000);
                 userData.blocks = [...res.blocks.map(b => ({header:b.header, logros:fixBulletPoints(b.logros)})), ...userData.blocks];
                 renderAll(); guardar(); hideLoading();
             };
             reader.readAsArrayBuffer(file);
         }
-
-        function toggleMergeBtn() { document.getElementById('btnCombinar').style.display = document.querySelectorAll('.merge-check:checked').length >= 2 ? 'inline-flex' : 'none'; }
-        function updateItem(l, i, f, v) { userData[l][i][f] = v; guardar(); }
-        function deleteItem(l, i) { saveHistory(); userData[l].splice(i,1); renderBlocks(); guardar(); }
-        function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText = m; }
-        function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
-        function closeMergeModal() { document.getElementById('mergeModal').style.display = 'none'; }
-        function renderAll() { renderBlocks(); document.getElementById('summaryArea').innerText = userData.summary || ""; }
-        function guardar() { userData.name = document.getElementById('printName').value; localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
     </script>
 </body>
 </html>
