@@ -292,10 +292,19 @@
 Instrucción de Fase 1: Tu objetivo es UNIFICAR, no filtrar. Enlista TODOS los logros únicos. 
 Si dos logros mencionan proyectos o métricas diferentes, CONSÉRVALOS AMBOS.
 JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
+                
                 pendingMerge = { result: res, indices: seleccionados };
-                document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${fixBulletPoints(res.logros).replace(/\n/g, '<br>')}`;
+                
+                // SEGURIDAD: Forzamos que el resultado sea texto puro antes de usar .replace
+                let textoFinal = fixBulletPoints(res.logros || "");
+                let htmlSeguro = String(textoFinal).replace(/\n/g, '<br>');
+                
+                document.getElementById('mergePreview').innerHTML = `<strong>${res.header || ''}</strong><br><br>${htmlSeguro}`;
                 document.getElementById('mergeModal').style.display = 'flex';
-            } catch(e) { alert(e.message); }
+            } catch(e) { 
+                console.error("Error en combinación:", e);
+                alert("Error al combinar bloques: " + e.message); 
+            }
             hideLoading();
         }
 
