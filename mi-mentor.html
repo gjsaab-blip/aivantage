@@ -174,21 +174,13 @@
         let lastTranscript = "";
         let currentVoiceTarget = "";
 
-        // MEJORA: CORRECCIÓN ROBUSTA DE BULLETPOINTS (Soporte multi-símbolo)
-       function fixBulletPoints(text) {
+        function fixBulletPoints(text) {
             if (!text) return "• ";
-            // Convertimos a texto puro y eliminamos cualquier viñeta vieja para no duplicar
             let str = String(text).replace(/[•\-\*]/g, '').trim();
-            
-            // Dividimos por saltos de línea existentes
             let lineas = str.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            
-            // Si el texto venía como en tu foto (bloque único con puntos seguidos), separamos por ". "
             if (lineas.length === 1 && str.includes('. ')) {
                 lineas = str.split('. ').map(l => l.trim()).filter(l => l.length > 0);
             }
-
-            // Devolvemos cada frase en una línea nueva con su punto
             return lineas.map(l => l.startsWith('• ') ? l : '• ' + l).join('\n');
         }
 
@@ -213,7 +205,6 @@
         }
         function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
         
-        // MEJORA: Función de guardado de API Key
         function saveApiKey() {
             const key = document.getElementById('apiKeyInput').value.trim();
             localStorage.setItem('aivantage_api_key', key);
@@ -290,24 +281,17 @@
             hideLoading();
         }
 
-async function combinarBloques() {
+        async function combinarBloques() {
             const seleccionados = Array.from(document.querySelectorAll('.merge-check:checked')).map(cb => parseInt(cb.dataset.index));
             if (seleccionados.length < 2) return;
-
             showLoading("Unificando experiencias...");
             const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
-            
             try {
                 const res = await callIA(`Une estos bloques. 
                 Regla: NO resumas. Lista cada logro en una línea nueva con viñeta.
                 JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
-                
                 pendingMerge = { result: res, indices: seleccionados };
-                
-                // Limpieza forzada a "una línea por punto"
                 const logrosOrdenados = fixBulletPoints(res.logros);
-                
-                // Mostramos en el modal con saltos de línea HTML
                 document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${logrosOrdenados.replace(/\n/g, '<br>')}`;
                 document.getElementById('mergeModal').style.display = 'flex';
             } catch(e) { 
@@ -398,16 +382,9 @@ Reglas de Ingesta (Fase 1):
         async function optimizarCVFinal() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) { alert("Por favor, pega una vacante (JD) en el analizador primero."); return; }
-            
-            saveHistory(); // MEJORA: Siempre permitimos deshacer tras la fase 3
+            saveHistory();
             showLoading("Aplicando Método XYZ y Optimización ATS...");
-            
-            const perfilActual = {
-                summary: userData.summary,
-                blocks: userData.blocks,
-                skills: userData.skills
-            };
-
+            const perfilActual = { summary: userData.summary, blocks: userData.blocks, skills: userData.skills };
             try {
                 const res = await callIA(`ESTRATEGA DE RRHH / MÉTODO GOOGLE XYZ.
                 REGLAS FASE 3:
@@ -416,19 +393,12 @@ Reglas de Ingesta (Fase 1):
                 3. ELEVATOR PITCH: [Rol] + [Stack] + [Hito].
                 JSON: {summary:'', blocks:[{header:'', logros:''}], skills:[{name:'', type:''}]}`, 
                 `JD: ${jd} \n\n PERFIL: ${JSON.stringify(perfilActual)}`, 2500);
-
                 userData.summary = res.summary;
-                userData.blocks = res.blocks.map(b => ({
-                    header: b.header,
-                    logros: fixBulletPoints(b.logros)
-                }));
+                userData.blocks = res.blocks.map(b => ({ header: b.header, logros: fixBulletPoints(b.logros) }));
                 userData.skills = res.skills;
-                
                 renderAll();
                 alert("CV Optimizado. Recuerda que puedes pulsar 'Deshacer' si quieres recuperar tu CV maestro.");
-            } catch(e) { 
-                alert("Error en optimización: " + e.message); 
-            }
+            } catch(e) { alert("Error en optimización: " + e.message); }
             hideLoading();
         }
 
@@ -484,10 +454,7 @@ Reglas de Ingesta (Fase 1):
         }
 
         function updatePersonalData(f, v) { userData[f] = v; guardar(); }
-        function updateItem(l, i, f, v) { 
-            if(f === 'logros') v = fixBulletPoints(v);
-            userData[l][i][f] = v; guardar(); 
-        }
+        function updateItem(l, i, f, v) { if(f === 'logros') v = fixBulletPoints(v); userData[l][i][f] = v; guardar(); }
         function updateProfileData(f, v) { userData[f] = v; guardar(); }
         function deleteItem(l, i) { userData[l].splice(i,1); guardar(); renderBlocks(); }
         function addManualBlock(t) { 
