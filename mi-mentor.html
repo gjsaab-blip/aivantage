@@ -175,14 +175,21 @@
         let currentVoiceTarget = "";
 
         // MEJORA: CORRECCIÓN ROBUSTA DE BULLETPOINTS (Soporte multi-símbolo)
-        function fixBulletPoints(text) {
-            if (typeof text !== 'string') return text || "";
-            // Convierte guiones o asteriscos en puntos
-            let fixed = text.replace(/^[ \t]*[-*][ \t]/gm, '• ');
-            // Asegura salto de línea antes de cada punto
-            fixed = fixed.replace(/([^\n])•/g, '$1\n•');
-            fixed = fixed.replace(/\n{3,}/g, '\n\n');
-            return fixed.trim();
+       function fixBulletPoints(text) {
+            if (!text) return "• ";
+            // Convertimos a texto puro y eliminamos cualquier viñeta vieja para no duplicar
+            let str = String(text).replace(/[•\-\*]/g, '').trim();
+            
+            // Dividimos por saltos de línea existentes
+            let lineas = str.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            // Si el texto venía como en tu foto (bloque único con puntos seguidos), separamos por ". "
+            if (lineas.length === 1 && str.includes('. ')) {
+                lineas = str.split('. ').map(l => l.trim()).filter(l => l.length > 0);
+            }
+
+            // Devolvemos cada frase en una línea nueva con su punto
+            return lineas.map(l => l.startsWith('• ') ? l : '• ' + l).join('\n');
         }
 
         function saveHistory() {
@@ -283,23 +290,25 @@
             hideLoading();
         }
 
-        async function combinarBloques() {
+async function combinarBloques() {
             const seleccionados = Array.from(document.querySelectorAll('.merge-check:checked')).map(cb => parseInt(cb.dataset.index));
-            showLoading("Generando propuesta...");
+            if (seleccionados.length < 2) return;
+
+            showLoading("Unificando experiencias...");
             const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
+            
             try {
-                const res = await callIA(`Une estos bloques de experiencia en uno solo. 
-Instrucción de Fase 1: Tu objetivo es UNIFICAR, no filtrar. Enlista TODOS los logros únicos. 
-Si dos logros mencionan proyectos o métricas diferentes, CONSÉRVALOS AMBOS.
-JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
+                const res = await callIA(`Une estos bloques. 
+                Regla: NO resumas. Lista cada logro en una línea nueva con viñeta.
+                JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
                 
                 pendingMerge = { result: res, indices: seleccionados };
                 
-                // SEGURIDAD: Forzamos que el resultado sea texto puro antes de usar .replace
-                let textoFinal = fixBulletPoints(res.logros || "");
-                let htmlSeguro = String(textoFinal).replace(/\n/g, '<br>');
+                // Limpieza forzada a "una línea por punto"
+                const logrosOrdenados = fixBulletPoints(res.logros);
                 
-                document.getElementById('mergePreview').innerHTML = `<strong>${res.header || ''}</strong><br><br>${htmlSeguro}`;
+                // Mostramos en el modal con saltos de línea HTML
+                document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${logrosOrdenados.replace(/\n/g, '<br>')}`;
                 document.getElementById('mergeModal').style.display = 'flex';
             } catch(e) { 
                 console.error("Error en combinación:", e);
