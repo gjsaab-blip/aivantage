@@ -24,11 +24,16 @@
         .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1200px; margin: auto; }
         .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         
+        /* Estilos de Plantillas Estructurales */
+        .template-classic .main-layout { grid-template-columns: 1fr; }
+        .template-classic .personal-data-container { text-align: left; border-bottom: 2pt solid black !important; padding-bottom: 10px; }
+        .template-minimal { font-family: 'Georgia', serif; }
+        .template-minimal .block { border: none; border-left: 1px solid var(--border); border-radius: 0; }
+
         .personal-data-container { text-align: center; border: none !important; margin-bottom: 30px !important; }
         .input-name { border: none; outline: none; font-size: 26px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
         .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
         .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; min-width: 150px; }
-        .input-contact:focus, .input-name:focus { border-bottom: 1px solid var(--ai-blue); }
 
         .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.05em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.9em; line-height: 1.7; white-space: pre-wrap; }
@@ -36,20 +41,23 @@
         .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; margin: 2px; display: inline-block; border: 1px solid transparent; }
         .skill-tech { background: #ebf8ff; color: #2b6cb0; border-color: #bee3f8; }
         .skill-soft { background: #f0fff4; color: #2f855a; border-color: #c6f6d5; }
-        .skill-lang { background: #fffaf0; color: #9c4221; border-color: #feebc8; }
         .skill-gap { background: #fff5f5; color: #c53030; border-color: #feb2b2; text-decoration: underline; }
 
         .block-controls { justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .section-title { text-transform: uppercase; font-weight: bold; font-size: 0.9em; color: gray; margin: 20px 0 10px 0; border-bottom: 1.5pt solid black; display: none; }
 
+        /* CAPA DE INVISIBILIDAD - IMPRESIÓN PROFESIONAL */
         @media print {
-            .navbar, .toolbar, .tabs, .target-panel, .block-controls, .tool-btn, #loadingOverlay, .merge-check, .modal-overlay, .btn-mic, #btnPreview { display: none !important; }
-            body { background: white; padding: 0; }
-            .main-layout { display: block; width: 100%; padding: 0; }
-            .block { border: none; margin-bottom: 10pt; padding: 0; }
-            .section-title { display: block !important; color: black !important; font-size: 12pt !important; border-bottom: 1.5pt solid black !important; }
-            .input-name { font-size: 22pt !important; color: black !important; text-align: center; }
-            .input-contact { font-size: 10pt !important; color: black !important; }
+            @page { margin: 1cm; size: A4; }
+            .navbar, .toolbar, .tabs, .target-panel, .block-controls, .tool-btn, #loadingOverlay, .merge-check, .modal-overlay, .btn-mic, #btnPreview, .fas, .fa-trash { display: none !important; }
+            body { background: white; padding: 0; color: black; }
+            .main-layout { display: block; width: 100%; padding: 0; margin: 0; }
+            .block { border: none; margin-bottom: 12pt; padding: 0; page-break-inside: avoid; }
+            .section-title { display: block !important; color: black !important; font-size: 12pt !important; border-bottom: 1.5pt solid black !important; margin-top: 15pt; }
+            .input-name { font-size: 24pt !important; color: black !important; text-align: center; font-weight: 900; }
+            .input-contact { font-size: 10pt !important; color: black !important; border: none; }
+            .editable-area { font-size: 10pt !important; color: black !important; }
+            input, textarea { border: none !important; }
         }
 
         #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
@@ -59,14 +67,13 @@
 
     <div id="loadingOverlay">
         <i class="fas fa-cog fa-spin" style="font-size: 3em; color: var(--ai-blue);"></i>
-        <p id="loadingStatus" style="margin-top: 15px; font-weight: 700;">AiVantage: Procesando...</p>
+        <p id="loadingStatus" style="margin-top: 15px; font-weight: 700;">AiVantage: Procesando Inteligencia...</p>
     </div>
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color: var(--ai-blue); margin-top: 0;">Configuración</h3>
-            <p style="font-size: 0.8em; color: gray;">Introduce tu API Key de OpenAI para habilitar la IA.</p>
-            <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;" placeholder="sk-proj-...">
+            <h3 style="color: var(--ai-blue); margin-top: 0;">Configuración SaaS</h3>
+            <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;" placeholder="OpenAI API Key">
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="tool-btn btn-primary" onclick="saveApiKey()">Guardar</button>
                 <button class="tool-btn" onclick="closeSettings()">Cerrar</button>
@@ -76,89 +83,75 @@
 
     <div id="mergeModal" class="modal-overlay">
         <div class="modal-content" style="width: 550px;">
-            <h4 style="margin-top:0; color: var(--ai-blue);">Revisar Combinación</h4>
+            <h4 style="margin-top:0; color: var(--ai-blue);">Unificación Estratégica</h4>
             <div id="mergePreview" contenteditable="true" style="text-align:left; font-size:0.85em; background:#f9f9f9; padding:15px; border-radius:8px; max-height:250px; overflow-y:auto; border: 1px solid var(--border); outline: none;"></div>
-            <p style="font-size:0.75em; color:gray; margin-top:10px;">¿Deseas reemplazar los bloques originales por esta versión?</p>
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button class="tool-btn btn-primary" onclick="confirmMerge()">Aceptar</button>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
+                <button class="tool-btn btn-primary" onclick="confirmMerge()">Aceptar Cambio</button>
                 <button class="tool-btn" onclick="closeMergeModal()">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <div id="voiceModal" class="modal-overlay">
-        <div class="modal-content">
-            <h4 style="margin-top:0; color: var(--ai-blue);">Transcripción Lista</h4>
-            <p id="voicePreview" style="font-size:0.85em; background:#f1f1f1; padding:10px; border-radius:8px; max-height:80px; overflow-y:auto; font-style:italic;"></p>
-            <p id="voiceTargetLabel" style="font-size:0.8em; font-weight:700;"></p>
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button class="tool-btn btn-primary" onclick="processVoiceAction()">Insertar</button>
-                <button class="tool-btn" onclick="closeVoiceModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
     <nav class="navbar">
-        <div style="font-weight: 800; color: var(--ai-blue); font-size: 1.3em;">AiVantage</div>
-        <div id="matchScoreDisplay" style="display:none; font-weight:800; color:var(--success);">Match: 0%</div>
+        <div style="font-weight: 800; color: var(--ai-blue); font-size: 1.3em;">AiVantage <span style="font-size:0.5em; vertical-align:middle; border:1px solid; padding:2px 5px; border-radius:4px;">HR SAAS</span></div>
+        <div id="matchScoreDisplay" style="display:none; font-weight:800; padding:5px 15px; border-radius:20px; background:var(--ai-light-blue);">Match: --%</div>
         <div style="display: flex; align-items: center; gap: 20px;">
             <div id="userDisplay" style="font-weight: 700; color: gray;"></div>
-            <i class="fas fa-cog" style="cursor: pointer; color: gray; font-size: 1.2em;" onclick="openSettings()"></i>
+            <i class="fas fa-cog" style="cursor: pointer; color: gray;" onclick="openSettings()"></i>
         </div>
     </nav>
 
     <div id="userSelector" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
-        <h2>Inicia tu sesión</h2>
+        <h2>Intelligence Center</h2>
         <div style="display: flex; gap: 20px;">
             <div onclick="selectUser('Gustavo')" style="background:white; padding:30px; border-radius:15px; border:1px solid var(--border); text-align:center; width:150px; cursor:pointer;"><i class="fas fa-user-tie" style="font-size: 2.5em; color: var(--ai-blue);"></i><h3>Gustavo</h3></div>
-            <div onclick="selectUser('Invitado')" style="background:white; padding:30px; border-radius:15px; border:1px solid var(--border); text-align:center; width:150px; cursor:pointer;"><i class="fas fa-user-friends" style="font-size: 2.5em; color: #718096;"></i><h3>Invitada</h3></div>
         </div>
     </div>
 
     <div id="toolbar" class="toolbar">
-        <button id="btnUndo" class="tool-btn" style="display:none; color: var(--danger); border-color: var(--danger);" onclick="undo()"><i class="fas fa-undo"></i> Deshacer</button>
+        <button id="btnUndo" class="tool-btn" style="display:none; color: var(--danger); border-color: var(--danger);" onclick="undo()"><i class="fas fa-undo"></i> Undo</button>
         <select id="templateSelector" class="tool-btn" onchange="applyTemplate(this.value)">
-            <option value="template-modern">Moderno</option>
-            <option value="template-classic">Clásico</option>
-            <option value="template-minimal">Minimalista</option>
+            <option value="template-modern">Formato Cronológico</option>
+            <option value="template-classic">Formato Híbrido (ATS)</option>
+            <option value="template-minimal">Formato Funcional</option>
         </select>
-        <button class="tool-btn btn-mic" id="btnDeepDiveGeneral" onclick="startDeepDive('summary')"><i class="fas fa-microphone"></i> Deep Dive</button>
-        <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar CVs</button>
+        <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar Experiencia</button>
         <input type="file" id="fileInput" style="display:none" accept=".pdf,.docx" multiple onchange="handleFileUpload(event)">
-        <button class="tool-btn" onclick="addManualBlock('exp')"><i class="fas fa-plus"></i> Exp.</button>
-        <button class="tool-btn" onclick="addManualBlock('edu')"><i class="fas fa-graduation-cap"></i> Edu.</button>
-        <button id="btnCombinar" class="tool-btn btn-primary" style="display:none" onclick="combinarBloques()"><i class="fas fa-object-group"></i> Combinar (IA)</button>
+        <button id="btnCombinar" class="tool-btn btn-primary" style="display:none" onclick="combinarBloques()"><i class="fas fa-object-group"></i> Unificar Bloques</button>
         <select id="outLang" class="tool-btn"><option value="es">ESP</option><option value="en">ENG</option></select>
-        <button id="btnPreview" class="tool-btn" style="display:none; color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Previsualización</button>
-        <button class="tool-btn" style="color: var(--success); border-color: var(--success);" onclick="optimizarCVFinal()"><i class="fas fa-magic"></i> Optimizar para Vacante (IA)</button>
-        <button class="tool-btn btn-primary" onclick="window.print()"><i class="fas fa-file-pdf"></i> Imprimir PDF</button>
+        <button id="btnPreview" class="tool-btn" style="display:none; color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa PDF</button>
+        <button class="tool-btn btn-primary" onclick="optimizarCVFinal()"><i class="fas fa-magic"></i> FASE 3: Optimizar ATS</button>
+        <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-file-pdf"></i> Generar CV Final</button>
     </div>
 
     <div id="mainLayout" class="main-layout">
         <div id="perfilView" class="template-modern">
             <div id="personalDataHeader" class="block personal-data-container">
-                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO" onblur="updatePersonalData('name', this.value)">
+                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO">
                 <div class="contact-row">
-                    <input id="inputEmail" class="input-contact" placeholder="📧 Email" onblur="updatePersonalData('email', this.value)">
-                    <input id="inputPhone" class="input-contact" placeholder="📞 Teléfono" onblur="updatePersonalData('phone', this.value)">
-                    <input id="inputLinkedin" class="input-contact" placeholder="🔗 LinkedIn" onblur="updatePersonalData('linkedin', this.value)">
+                    <input id="inputEmail" class="input-contact" placeholder="📧 Email">
+                    <input id="inputPhone" class="input-contact" placeholder="📞 Teléfono">
+                    <input id="inputLinkedin" class="input-contact" placeholder="🔗 LinkedIn">
                 </div>
             </div>
 
-            <div class="section-title">Resumen Ejecutivo</div>
+            <div class="section-title">Perfil Estratégico</div>
             <div class="block">
-                <div class="block-controls"><span></span><button class="tool-btn btn-mic" onclick="startDeepDive('summary')"><i class="fas fa-microphone"></i></button></div>
-                <div id="summaryArea" class="editable-area" contenteditable="true" onblur="updateProfileData('summary', this.innerText)"></div>
+                <div id="summaryArea" class="editable-area" contenteditable="true"></div>
             </div>
             <div class="section-title">Experiencia Profesional</div><div id="blocksExp"></div>
-            <div class="section-title">Educación</div><div id="blocksEdu"></div>
+            <div class="section-title">Formación</div><div id="blocksEdu"></div>
         </div>
 
         <div id="targetPanel" class="target-panel" style="flex-direction: column; gap: 15px;">
             <div class="block">
-                <div style="font-size: 0.7em; font-weight: 800; color: var(--ai-blue); margin-bottom: 8px;">ANALIZADOR DE VACANTE</div>
-                <textarea id="targetDesc" style="width:100%; height:100px; border:1px solid var(--border); border-radius:8px; font-size:0.8em; padding:8px;" placeholder="Pega la JD aquí..."></textarea>
-                <button style="width:100%; margin-top:10px; padding:8px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;" onclick="decodificarJD()">Decodificar Match</button>
+                <div style="font-size: 0.7em; font-weight: 800; color: var(--ai-blue); margin-bottom: 8px;">DECODIFICADOR DE VACANTE</div>
+                <textarea id="targetDesc" style="width:100%; height:120px; border:1px solid var(--border); border-radius:8px; font-size:0.8em; padding:8px;" placeholder="Pega la JD completa..."></textarea>
+                <button style="width:100%; margin-top:10px; padding:10px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer;" onclick="decodificarJD()">Analizar Mercado y Perfil</button>
+            </div>
+            <div id="marketInsights" style="display:none;" class="block">
+                <div style="font-size: 0.7em; font-weight: 800; color: var(--warning);">INSIGHTS DE MERCADO</div>
+                <div id="roleDetails" style="font-size:0.75em; margin-top:10px; line-height:1.4;"></div>
             </div>
             <div id="skillsContainer"></div>
             <div id="gapAlert" style="display:none; padding:12px; background:#fff5f5; border-radius:8px; border:1px solid #feb2b2; font-size:0.8em; color:#c53030;"></div>
@@ -170,308 +163,175 @@
         let userData = { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [], edu: [], skills: [] };
         let lastState = null;
         let pendingMerge = null;
-        let recognition;
-        let lastTranscript = "";
-        let currentVoiceTarget = "";
 
         function fixBulletPoints(text) {
             if (!text) return "• ";
             let str = String(text).replace(/[•\-\*]/g, '').trim();
             let lineas = str.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            if (lineas.length === 1 && str.includes('. ')) {
-                lineas = str.split('. ').map(l => l.trim()).filter(l => l.length > 0);
-            }
             return lineas.map(l => l.startsWith('• ') ? l : '• ' + l).join('\n');
         }
 
-        function saveHistory() {
-            lastState = JSON.parse(JSON.stringify(userData));
-            document.getElementById('btnUndo').style.display = 'inline-flex';
-        }
+        function saveHistory() { lastState = JSON.parse(JSON.stringify(userData)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
+        function undo() { if (lastState) { userData = JSON.parse(JSON.stringify(lastState)); lastState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
 
-        function undo() {
-            if (lastState) {
-                userData = JSON.parse(JSON.stringify(lastState));
-                lastState = null;
-                document.getElementById('btnUndo').style.display = 'none';
-                renderAll();
-                guardar();
-            }
-        }
-
-        function openSettings() { 
-            document.getElementById('settingsModal').style.display = 'flex';
-            document.getElementById('apiKeyInput').value = localStorage.getItem('aivantage_api_key') || "";
-        }
+        function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; document.getElementById('apiKeyInput').value = localStorage.getItem('aivantage_api_key') || ""; }
         function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-        
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            localStorage.setItem('aivantage_api_key', key);
-            alert("API Key guardada correctamente.");
-            closeSettings();
-        }
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.continuous = true;
-            recognition.lang = 'es-ES';
-            recognition.onresult = (event) => { for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) lastTranscript += event.results[i][0].transcript; } };
-        }
-
-        function applyTemplate(cls) { document.getElementById('perfilView').className = cls; }
-        
-        function togglePreview() {
-            const panel = document.getElementById('targetPanel');
-            const isHidden = panel.style.display === 'none';
-            panel.style.display = isHidden ? 'flex' : 'none';
-            document.querySelectorAll('.block-controls, .navbar').forEach(el => el.style.display = isHidden ? 'flex' : 'none');
-            document.getElementById('btnPreview').innerHTML = isHidden ? '<i class="fas fa-eye"></i> Previsualización' : '<i class="fas fa-edit"></i> Salir Vista Previa';
-        }
-
-        function startDeepDive(target) {
-            currentVoiceTarget = target;
-            const btn = event.currentTarget;
-            if (btn.classList.contains('recording')) {
-                recognition.stop();
-                btn.classList.remove('recording');
-                setTimeout(() => { if(lastTranscript.trim()) showVoiceDecision(); }, 500);
-            } else {
-                lastTranscript = "";
-                recognition.start();
-                btn.classList.add('recording');
-            }
-        }
-
-        function showVoiceDecision() {
-            document.getElementById('voicePreview').innerText = `"${lastTranscript}"`;
-            document.getElementById('voiceTargetLabel').innerText = `Insertando en sección...`;
-            document.getElementById('voiceModal').style.display = 'flex';
-        }
-
-        async function processVoiceAction() {
-            closeVoiceModal(); 
-            showLoading("IA redactando...");
-            const res = await callIA(`Convierte esto en logros profesionales. JSON: {text:''}`, lastTranscript, 500);
-            saveHistory();
-            if(currentVoiceTarget === 'summary') userData.summary += "\n" + res.text;
-            else if(typeof currentVoiceTarget === 'number') userData.blocks[currentVoiceTarget].logros += "\n" + res.text;
-            renderAll(); guardar(); hideLoading();
-        }
+        function saveApiKey() { localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); closeSettings(); }
 
         async function decodificarJD() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return;
-            showLoading("Analizando Match...");
+            showLoading("Ejecutando Análisis SaaS...");
             try {
-                const promptPerfil = `RESUMEN: ${userData.summary}. EXP: ${JSON.stringify(userData.blocks)}. EDU: ${JSON.stringify(userData.edu)}`;
-                const res = await callIA(`Compara perfil con JD. JSON: {score:85, match_skills:[{name:'', type:'tech'}], gaps:[{name:'', advice:''}]}`, `PERFIL: ${promptPerfil} \n JD: ${jd}`, 2000);
+                const res = await callIA(`ACTÚA COMO UN SAAS DE HR DE ÉLITE Y CONSULTOR ATS.
+                Analiza la JD y mi perfil. JSON obligatorio:
+                {
+                  "score": 0,
+                  "alternate_titles": [],
+                  "day_in_the_life": "",
+                  "role_summary_simple": "",
+                  "top_skills": [{"name":"", "type":"tech"}],
+                  "gap_skills": [{"name":"", "advice":""}]
+                }
+                REGLA: El score debe ser un cálculo real basado en densidad de palabras clave.`, 
+                `PERFIL: ${userData.summary} \n\n JD: ${jd}`, 2000);
+
                 document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
-                document.getElementById('btnPreview').style.display = 'inline-flex';
-                let html = "";
-                res.match_skills.forEach(s => html += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
-                document.getElementById('skillsContainer').innerHTML = html;
-                if(res.gaps && res.gaps.length > 0) {
+                document.getElementById('marketInsights').style.display = 'block';
+                document.getElementById('roleDetails').innerHTML = `
+                    <strong>Nombres alternativos:</strong> ${res.alternate_titles.join(', ')}<br><br>
+                    <strong>Día a día:</strong> ${res.day_in_the_life}<br><br>
+                    <strong>En resumen:</strong> ${res.role_summary_simple}
+                `;
+                
+                let sHtml = "";
+                res.top_skills.forEach(s => sHtml += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
+                document.getElementById('skillsContainer').innerHTML = sHtml;
+                
+                if(res.gap_skills.length > 0) {
                     document.getElementById('gapAlert').style.display = 'block';
-                    document.getElementById('gapAlert').innerHTML = res.gaps.map(g => `• ${g.name}: ${g.advice}`).join('<br>');
+                    document.getElementById('gapAlert').innerHTML = "<strong>GAPS DETECTADOS (ATS):</strong><br>" + res.gap_skills.map(g => `• ${g.name}: ${g.advice}`).join('<br>');
                 }
-            } catch(e) { alert("Error: " + e.message); }
+                document.getElementById('btnPreview').style.display = 'inline-flex';
+            } catch(e) { alert(e.message); }
+            hideLoading();
+        }
+
+        async function optimizarCVFinal() {
+            const jd = document.getElementById('targetDesc').value;
+            if(!jd) { alert("Pega la JD en el decodificador primero."); return; }
+            saveHistory();
+            showLoading("Fase 3: Curación y Método XYZ...");
+            try {
+                const res = await callIA(`ESTRATEGA DE CV / FILTRO ATS / MÉTODO GOOGLE XYZ.
+                TAREA: Selecciona de mi experiencia solo lo que hace match con la JD.
+                REGLAS:
+                1. CURACIÓN: Elimina logros irrelevantes.
+                2. MÉTODO XYZ: Reescribe cada logro como: [Acción Técnica] + [Métrica/Contexto] + [Resultado].
+                3. TONO: Alinea el resumen ejecutivo a la cultura de la empresa en la JD.
+                JSON: { "summary": "", "blocks": [{"header":"", "logros":""}] }`, 
+                `JD: ${jd} \n\n PERFIL MAESTRO: ${JSON.stringify(userData.blocks)}`, 3000);
+                
+                userData.summary = res.summary;
+                userData.blocks = res.blocks.map(b => ({ header: b.header, logros: fixBulletPoints(b.logros) }));
+                renderAll();
+                alert("CV Optimizado para ATS. Revisa en 'Vista Previa'.");
+            } catch(e) { alert(e.message); }
             hideLoading();
         }
 
         async function combinarBloques() {
             const seleccionados = Array.from(document.querySelectorAll('.merge-check:checked')).map(cb => parseInt(cb.dataset.index));
-            if (seleccionados.length < 2) return;
-            showLoading("Unificando experiencias...");
+            showLoading("Deduplicando con Inteligencia...");
             const dataToMerge = seleccionados.map(idx => userData.blocks[idx]);
-            try {
-                const res = await callIA(`Une estos bloques. 
-                REGLAS ESTRICTAS DE UNIFICACIÓN:
-                1. PROHIBIDO RESUMIR O FILTRAR: Extrae y lista TODOS los logros individuales.
-                2. PRESERVACIÓN DE VOLUMEN: El bloque resultante debe ser proporcional a la suma de los originales.
-                3. DEDUPLICACIÓN INTELIGENTE: Si un logro es EXACTAMENTE idéntico en texto y significado, inclúyelo una vez. Pero si hay métricas o detalles diferentes, MANTÉN AMBOS como puntos separados.
-                4. NO AGRUPAR: No sintetices ideas distintas en un solo punto.
-                JSON: {header:'', logros:''}`, JSON.stringify(dataToMerge), 3000);
-                pendingMerge = { result: res, indices: seleccionados };
-                const logrosOrdenados = fixBulletPoints(res.logros);
-                document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${logrosOrdenados.replace(/\n/g, '<br>')}`;
-                document.getElementById('mergeModal').style.display = 'flex';
-            } catch(e) { 
-                console.error("Error en combinación:", e);
-                alert("Error al combinar bloques: " + e.message); 
-            }
+            const res = await callIA(`UNE SIN PERDER DATOS.
+                Reglas: 1. No resumas. 2. Si son idénticos, une. 3. Si varían métricas o herramientas, MANTÉN AMBOS.
+                JSON: { "header": "", "logros": "" }`, JSON.stringify(dataToMerge), 3000);
+            pendingMerge = { result: res, indices: seleccionados };
+            document.getElementById('mergePreview').innerHTML = `<strong>${res.header}</strong><br><br>${fixBulletPoints(res.logros).replace(/\n/g, '<br>')}`;
+            document.getElementById('mergeModal').style.display = 'flex';
             hideLoading();
         }
 
         function confirmMerge() {
             saveHistory();
-            const editedContent = document.getElementById('mergePreview').innerText;
-            const lines = editedContent.split('\n');
-            const newHeader = lines[0] || pendingMerge.result.header;
-            const newLogros = lines.slice(1).join('\n').trim() || "";
-
             pendingMerge.indices.sort((a,b) => b-a).forEach(idx => userData.blocks.splice(idx, 1));
-            userData.blocks.unshift({ 
-                header: newHeader, 
-                logros: fixBulletPoints(newLogros) 
-            });
-            
-            closeMergeModal(); 
-            guardar(); 
-            renderAll();
-        }
-
-        function closeMergeModal() { document.getElementById('mergeModal').style.display = 'none'; pendingMerge = null; }
-
-        async function handleFileUpload(event) {
-            const files = event.target.files; showLoading("Extrayendo datos...");
-            try {
-                for (let file of files) {
-                    const reader = new FileReader();
-                    const text = await new Promise((resolve) => {
-                        reader.onload = async function() {
-                            if (file.type === "application/pdf") {
-                                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-                                let fullT = ""; for (let i=1; i<=pdf.numPages; i++) { const p = await pdf.getPage(i); const c = await p.getTextContent(); fullT += c.items.map(it => it.str).join(" "); }
-                                resolve(fullT);
-                            } else {
-                                const res = await mammoth.extractRawText({arrayBuffer: this.result});
-                                resolve(res.value);
-                            }
-                        };
-                        reader.readAsArrayBuffer(file);
-                    });
-                    const res = await callIA(`Extrae CV. JSON: {summary:'', blocks:[{header:'', logros:''}], edu:[{header:'', detalle:''}], skills:[{name:'', type:'tech'}]}`, text, 1500);
-                    saveHistory();
-                    if(res.summary) userData.summary = (userData.summary + "\n" + res.summary).trim();
-                    if(res.blocks) {
-                        const newBlocks = res.blocks.map(b => ({ header: b.header || "", logros: fixBulletPoints(b.logros || "") }));
-                        userData.blocks = [...newBlocks, ...userData.blocks];
-                    }
-                    if(res.edu) userData.edu = [...res.edu, ...userData.edu];
-                    if(res.skills) userData.skills = [...res.skills, ...userData.skills];
-                    guardar(); renderAll();
-                }
-            } catch(e) { alert("Error: " + e.message); }
-            hideLoading();
-            event.target.value = '';
+            userData.blocks.unshift({ header: pendingMerge.result.header, logros: fixBulletPoints(document.getElementById('mergePreview').innerText) });
+            closeMergeModal(); renderAll(); guardar();
         }
 
         async function callIA(sys, usr, tokens) {
             const key = localStorage.getItem('aivantage_api_key');
-            if(!key) { alert("Configura tu API Key en el icono de engranaje"); hideLoading(); throw new Error("API Key faltante"); }
-            const lang = document.getElementById('outLang').value;
+            if(!key) throw new Error("API Key faltante");
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({
                     model: "gpt-4o",
-                    messages: [{ role: "system", content: `ERES GUSTAVO, Líder de Estrategia. Responde en ${lang}. JSON obligatorio.
-Reglas de Ingesta (Fase 1):
-1. PROHIBIDO RESUMIR: No sintetices información distinta.
-2. VOZ HUMANA: Primera persona singular ("Lideré").
-3. FIDELIDAD TÉCNICA: Mantén métricas ($), herramientas y nombres.
-4. FORMATO: Logros con viñeta •. ` + sys }, { role: "user", content: usr }],
+                    messages: [{ role: "system", content: sys }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
-                    max_tokens: tokens, temperature: 0.3
+                    max_tokens: tokens, temperature: 0.2
                 })
             });
             const data = await response.json();
-            if (!response.ok) throw new Error("Error en IA");
             return JSON.parse(data.choices[0].message.content);
         }
 
-        async function optimizarCVFinal() {
-            const jd = document.getElementById('targetDesc').value;
-            if(!jd) { alert("Por favor, pega una vacante (JD) en el analizador primero."); return; }
-            saveHistory();
-            showLoading("Aplicando Método XYZ y Optimización ATS...");
-            const perfilActual = { summary: userData.summary, blocks: userData.blocks, skills: userData.skills };
-            try {
-                const res = await callIA(`ESTRATEGA DE RRHH / MÉTODO GOOGLE XYZ.
-                REGLAS FASE 3:
-                1. MÉTODO XYZ: [Acción Técnica] + [Métrica/Contexto] + [Resultado].
-                2. SELECCIÓN ATS: Filtra solo lo relevante para la JD.
-                3. ELEVATOR PITCH: [Rol] + [Stack] + [Hito].
-                JSON: {summary:'', blocks:[{header:'', logros:''}], skills:[{name:'', type:''}]}`, 
-                `JD: ${jd} \n\n PERFIL: ${JSON.stringify(perfilActual)}`, 2500);
-                userData.summary = res.summary;
-                userData.blocks = res.blocks.map(b => ({ header: b.header, logros: fixBulletPoints(b.logros) }));
-                userData.skills = res.skills;
-                renderAll();
-                alert("CV Optimizado. Recuerda que puedes pulsar 'Deshacer' si quieres recuperar tu CV maestro.");
-            } catch(e) { alert("Error en optimización: " + e.message); }
-            hideLoading();
+        function applyTemplate(cls) { document.getElementById('perfilView').className = cls; }
+        function togglePreview() { 
+            const panel = document.getElementById('targetPanel');
+            const isHidden = panel.style.display === 'none';
+            panel.style.display = isHidden ? 'flex' : 'none';
+            document.querySelectorAll('.block-controls, .navbar, .fa-trash').forEach(el => el.style.display = isHidden ? 'flex' : 'none');
         }
 
         function renderBlocks() {
-            const expCont = document.getElementById('blocksExp');
-            expCont.innerHTML = userData.blocks.map((b, i) => `
+            document.getElementById('blocksExp').innerHTML = userData.blocks.map((b, i) => `
                 <div class="block">
-                    <div class="block-controls">
-                        <input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()">
-                        <div style="display:flex; gap:5px;">
-                            <button class="tool-btn btn-mic" onclick="startDeepDive(${i})"><i class="fas fa-microphone"></i></button>
-                            <button style="border:none; background:none; color:gray; cursor:pointer;" onclick="saveHistory(); deleteItem('blocks', ${i})"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    <input class="input-header" value="${b.header || ''}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
-                    <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${fixBulletPoints(b.logros || '')}</div>
+                    <div class="block-controls"><input type="checkbox" class="merge-check" data-index="${i}" onchange="toggleMergeBtn()"><i class="fas fa-trash" onclick="deleteItem('blocks', ${i})" style="cursor:pointer; color:gray;"></i></div>
+                    <input class="input-header" value="${b.header}" onblur="updateItem('blocks', ${i}, 'header', this.value)">
+                    <div class="editable-area" contenteditable="true" onblur="updateItem('blocks', ${i}, 'logros', this.innerText)">${fixBulletPoints(b.logros)}</div>
                 </div>`).join('');
-            
-            const eduCont = document.getElementById('blocksEdu');
-            eduCont.innerHTML = userData.edu.map((e, i) => `
-                <div class="block">
-                    <div class="block-controls"><span></span><button style="border:none; background:none; color:gray; cursor:pointer;" onclick="saveHistory(); deleteItem('edu', ${i})"><i class="fas fa-trash"></i></button></div>
-                    <input class="input-header" value="${e.header || ''}" onblur="updateItem('edu', ${i}, 'header', this.value)">
-                    <div class="editable-area" contenteditable="true" onblur="updateItem('edu', ${i}, 'detalle', this.innerText)">${e.detalle || ''}</div>
-                </div>`).join('');
-            
-            if (Array.isArray(userData.skills)) {
-                document.getElementById('skillsContainer').innerHTML = userData.skills.map(s => `<span class="skill-tag skill-${s.type || 'tech'}">${s.name}</span>`).join('');
-            }
+            document.getElementById('blocksEdu').innerHTML = userData.edu.map((e, i) => `
+                <div class="block"><div class="block-controls"><span></span><i class="fas fa-trash" onclick="deleteItem('edu', ${i})"></i></div>
+                <input class="input-header" value="${e.header}" onblur="updateItem('edu', ${i}, 'header', this.value)"><div class="editable-area" contenteditable="true">${e.detalle}</div></div>`).join('');
             toggleMergeBtn();
         }
 
-        function toggleMergeBtn() {
-            const count = document.querySelectorAll('.merge-check:checked').length;
-            document.getElementById('btnCombinar').style.display = count >= 2 ? 'inline-flex' : 'none';
-        }
-
         function selectUser(name) {
-            currentUser = name;
-            document.getElementById('userSelector').style.display = 'none';
-            document.getElementById('toolbar').style.display = 'flex';
-            document.getElementById('mainLayout').style.display = 'grid';
-            document.getElementById('userDisplay').innerText = currentUser;
+            currentUser = name; document.getElementById('userSelector').style.display = 'none';
+            document.getElementById('toolbar').style.display = 'flex'; document.getElementById('mainLayout').style.display = 'grid';
             const saved = localStorage.getItem('aivantage_' + currentUser);
-            if (saved) {
-                userData = JSON.parse(saved);
-                document.getElementById('printName').value = userData.name || "";
-                document.getElementById('inputEmail').value = userData.email || "";
-                document.getElementById('inputPhone').value = userData.phone || "";
-                document.getElementById('inputLinkedin').value = userData.linkedin || "";
-            }
+            if(saved) { userData = JSON.parse(saved); document.getElementById('printName').value = userData.name; }
             renderAll();
         }
 
-        function updatePersonalData(f, v) { userData[f] = v; guardar(); }
-        function updateItem(l, i, f, v) { if(f === 'logros') v = fixBulletPoints(v); userData[l][i][f] = v; guardar(); }
-        function updateProfileData(f, v) { userData[f] = v; guardar(); }
-        function deleteItem(l, i) { userData[l].splice(i,1); guardar(); renderBlocks(); }
-        function addManualBlock(t) { 
-            saveHistory();
-            if(t==='exp') userData.blocks.unshift({header:'Nueva Empresa', logros:'• '});
-            else userData.edu.unshift({header:'Nueva Educación', detalle:''});
-            renderBlocks(); guardar(); 
+        async function handleFileUpload(event) {
+            showLoading("Ingesta de Datos Maestro...");
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async function() {
+                let text = "";
+                if(file.type === "application/pdf") {
+                    const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+                    for(let i=1; i<=pdf.numPages; i++){ const p = await pdf.getPage(i); const c = await p.getTextContent(); text += c.items.map(it => it.str).join(" "); }
+                } else { const res = await mammoth.extractRawText({arrayBuffer: this.result}); text = res.value; }
+                const res = await callIA("Extrae experiencia profesional íntegra. JSON: {blocks:[{header:'', logros:''}]}", text, 2500);
+                userData.blocks = [...res.blocks.map(b => ({header:b.header, logros:fixBulletPoints(b.logros)})), ...userData.blocks];
+                renderAll(); guardar(); hideLoading();
+            };
+            reader.readAsArrayBuffer(file);
         }
-        function closeVoiceModal() { document.getElementById('voiceModal').style.display = 'none'; }
+
+        function toggleMergeBtn() { document.getElementById('btnCombinar').style.display = document.querySelectorAll('.merge-check:checked').length >= 2 ? 'inline-flex' : 'none'; }
+        function updateItem(l, i, f, v) { userData[l][i][f] = v; guardar(); }
+        function deleteItem(l, i) { saveHistory(); userData[l].splice(i,1); renderBlocks(); guardar(); }
         function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText = m; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
+        function closeMergeModal() { document.getElementById('mergeModal').style.display = 'none'; }
         function renderAll() { renderBlocks(); document.getElementById('summaryArea').innerText = userData.summary || ""; }
-        function guardar() { localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
+        function guardar() { userData.name = document.getElementById('printName').value; localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
     </script>
 </body>
 </html>
