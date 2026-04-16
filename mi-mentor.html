@@ -36,15 +36,14 @@
         .skill-soft { background: #f0fff4; color: #2f855a; border-color: #c6f6d5; }
         .skill-gap { background: #fff5f5; color: #c53030; border-color: #feb2b2; text-decoration: underline; }
 
+        .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
+        .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; line-height: 1.4; }
+
         /* PREVIEW MODES */
         #perfilView.preview-mode { background: white; padding: 0; border-radius: 0; box-shadow: none; width: 21cm; min-height: 29.7cm; margin: auto; padding: 1.5cm; }
         .preview-mode .block { border: none !important; padding: 0 !important; margin-bottom: 1.2rem !important; }
         .preview-mode .block-controls, .preview-mode .btn-mic, .preview-mode .fa-trash, .preview-mode .merge-check { display: none !important; }
         .preview-mode .section-title { display: block !important; border-bottom: 1.5pt solid #333; margin-bottom: 10px; font-size: 11pt; color: #333; text-transform: uppercase; font-weight: 900; }
-
-        .template-ats-hibrido.preview-mode { font-family: 'Arial', sans-serif; }
-        .template-ats-hibrido.preview-mode .input-name { color: black !important; font-size: 22pt !important; }
-        .template-ats-hibrido.preview-mode .input-header { color: black !important; font-size: 12pt !important; text-transform: uppercase; }
 
         #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
@@ -134,6 +133,14 @@
                 <div style="font-size: 0.7em; font-weight: 900; color: var(--ai-blue);">JOB DESCRIPTION</div>
                 <textarea id="targetDesc" style="width:100%; height:120px; border:1px solid var(--border); border-radius:8px; font-size:0.85em; padding:10px; margin-top:5px;" placeholder="Pega la JD..."></textarea>
                 <button style="width:100%; margin-top:10px; padding:10px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;" onclick="decodificarJD()">Analizar Match Estratégico</button>
+                
+                <div id="jdAnalysisResults" style="display:none; margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
+                    <div class="analysis-label">Nombres Alternativos</div>
+                    <div id="altJobTitles" class="analysis-content">--</div>
+                    
+                    <div class="analysis-label">Actividades Diarias</div>
+                    <div id="dailyActivities" class="analysis-content">--</div>
+                </div>
             </div>
             <div id="skillsContainer"></div>
             <div id="gapAlert" style="display:none; padding:12px; background:#fff5f5; border-radius:8px; border:1px solid #feb2b2; font-size:0.8em; color:#c53030;"></div>
@@ -148,7 +155,6 @@
         let recognition;
         let lastTranscript = "";
 
-        // RECONOCIMIENTO DE VOZ
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
@@ -157,17 +163,23 @@
             recognition.onresult = (event) => { for (let i = event.resultIndex; i < event.results.length; ++i) { if (event.results[i].isFinal) lastTranscript += event.results[i][0].transcript; } };
         }
 
-        // FUNCIÓN RESTAURADA: ANALIZAR MATCH ESTRATÉGICO
         async function decodificarJD() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) { alert("Por favor, pega una Job Description."); return; }
-            showLoading("Analizando Match con el Mercado...");
+            showLoading("Analizando Vacante...");
             try {
-                const res = await callIA(`ACTÚA COMO UN EXPERTO EN RECLUTAMIENTO Y ATS. 
-                Analiza la JD y compárala con el CV.
-                JSON: { "score": 0, "top_skills": [{"name":"", "type":"tech/soft"}], "gaps": [""] }`, 
-                `JD: ${jd} \n\n CV: ${JSON.stringify(userData)}`, 1500);
+                const res = await callIA(`ACTÚA COMO ESTRATEGA DE CARRERA.
+                Analiza la JD y devuelve el match.
+                JSON: { 
+                    "score": 0, 
+                    "top_skills": [{"name":"", "type":"tech/soft"}], 
+                    "gaps": [""],
+                    "puestos_alternativos": "Nombres comunes del rol en el mercado",
+                    "actividades_diarias": "Resumen ejecutivo de tareas del día a día"
+                }`, 
+                `JD: ${jd} \n\n CV: ${JSON.stringify(userData)}`, 2000);
 
+                // Score y Skills
                 const scoreEl = document.getElementById('matchScoreDisplay');
                 scoreEl.innerText = `Match: ${res.score}%`;
                 scoreEl.style.display = 'block';
@@ -176,16 +188,20 @@
                 res.top_skills.forEach(s => sHtml += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
                 document.getElementById('skillsContainer').innerHTML = sHtml;
 
+                // Restaurar Desglose de Puesto
+                document.getElementById('jdAnalysisResults').style.display = 'block';
+                document.getElementById('altJobTitles').innerText = res.puestos_alternativos || "No especificado";
+                document.getElementById('dailyActivities').innerText = res.actividades_diarias || "No especificado";
+
                 if(res.gaps && res.gaps.length > 0) {
                     const gapEl = document.getElementById('gapAlert');
                     gapEl.style.display = 'block';
-                    gapEl.innerHTML = `<strong>GAPS DETECTADOS:</strong><br>${res.gaps.join('<br>')}`;
+                    gapEl.innerHTML = `<strong>GAPS:</strong><br>${res.gaps.join('<br>')}`;
                 }
-            } catch(e) { alert("Error en el análisis: " + e.message); }
+            } catch(e) { alert("Error: " + e.message); }
             hideLoading();
         }
 
-        // OTROS PROCESOS IA
         async function callIA(sys, usr, tokens) {
             const key = localStorage.getItem('aivantage_api_key');
             if(!key) throw new Error("API Key faltante");
@@ -203,7 +219,6 @@
             return JSON.parse(data.choices[0].message.content);
         }
 
-        // SISTEMA DE VOZ
         function startDeepDive(target) {
             currentVoiceTarget = target;
             const btn = event.currentTarget;
@@ -234,7 +249,7 @@
             closeVoiceModal();
             showLoading("Redactando...");
             try {
-                const res = await callIA("Convierte este audio en logros. JSON: {header:'', logros:''}", lastTranscript, 800);
+                const res = await callIA("Convierte audio en logros. JSON: {header:'', logros:''}", lastTranscript, 800);
                 saveHistory();
                 if(isNew) userData.blocks.unshift({ header: res.header, logros: fixBulletPoints(res.logros) });
                 selectedIndices.forEach(idx => { userData.blocks[idx].logros += "\n" + res.logros; userData.blocks[idx].logros = fixBulletPoints(userData.blocks[idx].logros); });
@@ -243,7 +258,6 @@
             hideLoading();
         }
 
-        // UTILIDADES Y RENDER
         function fixBulletPoints(t) { if(!t) return "• "; let s = String(t).replace(/[•\-\*]/g, '').trim(); return s.split('\n').map(l => '• ' + l.trim()).join('\n'); }
         function selectUser(n) { currentUser = n; document.getElementById('userSelector').style.display = 'none'; document.getElementById('toolbar').style.display = 'flex'; document.getElementById('mainLayout').style.display = 'grid'; document.getElementById('userDisplay').innerText = n; const s = localStorage.getItem('aivantage_'+n); if(s){ userData = JSON.parse(s); document.getElementById('printName').value = userData.name || ""; } renderAll(); }
         function renderAll() { 
@@ -252,6 +266,7 @@
         }
         function togglePreview() { isPreviewMode = !isPreviewMode; document.getElementById('perfilView').classList.toggle('preview-mode', isPreviewMode); document.getElementById('targetPanel').style.display = isPreviewMode ? 'none' : 'flex'; }
         function updatePersonalData(f,v){ userData[f]=v; guardar(); }
+        function updateProfileData(f,v){ userData[f]=v; guardar(); }
         function updateItem(l,i,f,v){ userData[l][i][f]=v; guardar(); }
         function guardar(){ localStorage.setItem('aivantage_'+currentUser, JSON.stringify(userData)); }
         function showLoading(m){ document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText=m; }
@@ -259,6 +274,9 @@
         function closeVoiceModal(){ document.getElementById('voiceModal').style.display='none'; }
         function saveApiKey(){ localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); closeSettings(); }
         function closeSettings(){ document.getElementById('settingsModal').style.display='none'; }
+        function saveHistory() { lastState = JSON.parse(JSON.stringify(userData)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
+        function undo() { if (lastState) { userData = JSON.parse(JSON.stringify(lastState)); lastState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
+        function applyTemplate(cls) { document.getElementById('perfilView').className = cls + (isPreviewMode ? ' preview-mode' : ''); }
     </script>
 </body>
 </html>
