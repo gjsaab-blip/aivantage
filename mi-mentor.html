@@ -11,48 +11,49 @@
         :root { --ai-blue: #005587; --ai-light-blue: #eaf4f9; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; --danger: #e53e3e; --success: #2f855a; --warning: #c05621; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); transition: all 0.3s; }
         
-        .navbar, .toolbar, .target-panel, .block-controls, .tool-btn, #userSelector { display: flex; }
-        .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        /* Layout */
+        .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); display: flex; position: sticky; top: 0; z-index: 100; }
         .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); display: none; gap: 10px; align-items: center; position: sticky; top: 72px; z-index: 99; flex-wrap: wrap; }
-        .tool-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
+        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1300px; margin: auto; }
+        
+        /* Componentes */
+        .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+        .block-controls { position: absolute; right: 10px; top: 10px; display: flex; gap: 8px; z-index: 5; }
+        .tool-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
         .btn-primary { background: var(--ai-blue) !important; color: white !important; border: none; }
         .btn-mic.recording { background: var(--danger) !important; color: white !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 450px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        
-        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1250px; margin: auto; }
-        .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
-        
+        /* Formatos de Texto */
         .input-name { border: none; outline: none; font-size: 28px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
-        .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
-        .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; min-width: 150px; }
+        .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
+        .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; width: auto; }
         .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.1em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; }
 
-        .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; margin: 2px; display: inline-block; border: 1px solid transparent; }
-        .skill-tech { background: #ebf8ff; color: #2b6cb0; border-color: #bee3f8; }
-        .skill-soft { background: #f0fff4; color: #2f855a; border-color: #c6f6d5; }
-
+        /* Análisis Lateral */
         .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
-        .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; line-height: 1.4; }
+        .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; }
+        .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; margin: 2px; display: inline-block; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
 
-        /* VISTA PREVIA & IMPRESIÓN */
-        #perfilView.preview-mode { background: white; padding: 1.5cm; width: 21cm; min-height: 29.7cm; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        /* Modales */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 450px; text-align: center; }
+
+        /* Vista Previa & Impresión */
+        #perfilView.preview-mode { background: white; padding: 1.5cm; width: 21cm; min-height: 29.7cm; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
         .preview-mode .block { border: none !important; padding: 0 !important; margin-bottom: 1.2rem !important; }
-        .preview-mode .block-controls, .preview-mode .btn-mic, .preview-mode .fa-trash, .preview-mode .merge-check { display: none !important; }
-        .preview-mode .section-title { display: block !important; border-bottom: 1.5pt solid #333; margin-bottom: 10px; font-size: 11pt; color: #333; text-transform: uppercase; font-weight: 900; }
+        .preview-mode .block-controls, .preview-mode .btn-mic { display: none !important; }
+        .preview-mode .section-title { border-bottom: 1.5pt solid #333; margin-bottom: 8px; font-weight: 900; text-transform: uppercase; }
 
         @media print {
+            .navbar, .toolbar, .target-panel, #loadingOverlay { display: none !important; }
             body { background: white; }
-            .navbar, .toolbar, .target-panel, .block-controls, #loadingOverlay { display: none !important; }
-            .main-layout { display: block; padding: 0; margin: 0; width: 100%; }
-            #perfilView { box-shadow: none !important; margin: 0 !important; width: 100% !important; padding: 0 !important; }
-            #perfilView.preview-mode { padding: 0 !important; }
+            .main-layout { display: block; padding: 0; margin: 0; }
+            #perfilView { box-shadow: none !important; width: 100% !important; padding: 0 !important; }
         }
 
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
+        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body>
@@ -64,132 +65,204 @@
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="color: var(--ai-blue);">Configuración</h3>
-            <input type="password" id="apiKeyInput" style="width: 90%; padding: 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="sk-...">
-            <div style="display: flex; gap: 10px; justify-content: center; margin-top:15px;">
-                <button class="tool-btn btn-primary" onclick="saveApiKey()">Guardar</button>
-                <button class="tool-btn" onclick="closeSettings()">Cerrar</button>
-            </div>
+            <h3>Configuración</h3>
+            <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px;" placeholder="sk-...">
+            <button class="tool-btn btn-primary" style="margin-top:10px; width:100%;" onclick="saveApiKey()">Guardar API Key</button>
+            <button class="tool-btn" style="margin-top:5px; width:100%;" onclick="document.getElementById('settingsModal').style.display='none'">Cerrar</button>
         </div>
     </div>
 
     <nav class="navbar">
         <div style="font-weight: 900; color: var(--ai-blue); font-size: 1.4em;">AiVantage</div>
         <div id="matchScoreDisplay" style="display:none; font-weight:900; padding:6px 16px; border-radius:20px; background:var(--ai-light-blue); color:var(--ai-blue);">Match: --%</div>
-        <div id="userDisplay" style="font-weight: 700; color: gray;"></div>
+        <div id="userDisplay" style="font-weight: 700;"></div>
     </nav>
 
-    <div id="userSelector" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh;">
-        <h2>Inicia Sesión</h2>
-        <div style="display: flex; gap: 25px;">
-            <div onclick="selectUser('Gustavo')" style="background:white; padding:40px; border-radius:20px; border:1px solid var(--border); text-align:center; width:160px; cursor:pointer;"><i class="fas fa-user-tie" style="font-size: 3em; color: var(--ai-blue);"></i><h3>Gustavo</h3></div>
+    <div id="userSelector" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; gap: 20px;">
+        <h2>Selecciona Perfil</h2>
+        <div style="display:flex; gap:20px;">
+            <button class="tool-btn" style="padding:20px;" onclick="selectUser('Gustavo')">GUSTAVO</button>
+            <button class="tool-btn" style="padding:20px;" onclick="selectUser('Invitado')">INVITADO</button>
         </div>
     </div>
 
     <div id="toolbar" class="toolbar">
-        <button class="tool-btn" onclick="openSettings()"><i class="fas fa-cog"></i> API Key</button>
+        <button id="btnUndo" class="tool-btn" style="display:none; color: var(--danger);" onclick="undo()"><i class="fas fa-undo"></i> Deshacer</button>
+        <button class="tool-btn" onclick="document.getElementById('settingsModal').style.display='flex'"><i class="fas fa-cog"></i> Configurar</button>
         <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar Datos</button>
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)">
-        <button id="btnPreviewToggle" class="tool-btn" style="color: var(--warning); border-color: var(--warning);" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa</button>
-        <button class="tool-btn btn-primary" onclick="optimizarCVFinal()"><i class="fas fa-bolt"></i> Fase 3: Optimizar</button>
+        <button id="btnPreviewToggle" class="tool-btn" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa</button>
+        <button class="tool-btn btn-primary" onclick="ejecutarFase3()"><i class="fas fa-bolt"></i> Fase 3: Optimizar para JD</button>
         <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-print"></i> PDF</button>
     </div>
 
     <div id="mainLayout" class="main-layout">
-        <div id="perfilView" class="template-ats-hibrido">
-            <div class="block">
-                <input id="printName" class="input-name" placeholder="NOMBRE COMPLETO" onblur="updatePersonalData('name', this.value)">
-                <div class="contact-row">
-                    <input id="inputEmail" class="input-contact" placeholder="Email" onblur="updatePersonalData('email', this.value)">
-                    <input id="inputPhone" class="input-contact" placeholder="Teléfono" onblur="updatePersonalData('phone', this.value)">
-                    <input id="inputLinkedin" class="input-contact" placeholder="LinkedIn" onblur="updatePersonalData('linkedin', this.value)">
-                </div>
-            </div>
-            <div class="section-title">Resumen Ejecutivo</div>
-            <div class="block"><div id="summaryArea" class="editable-area" contenteditable="true" onblur="updatePersonalData('summary', this.innerText)"></div></div>
-            
-            <div id="cvSkillsSection" style="display:none;">
-                <div class="section-title">Competencias Clave</div>
-                <div class="block"><div id="cvSkillsContainer"></div></div>
-            </div>
-
-            <div class="section-title">Experiencia Profesional</div>
-            <div id="blocksExp"></div>
+        <div id="perfilView">
+            <div id="cvContent"></div>
         </div>
 
-        <div id="targetPanel" class="target-panel" style="flex-direction: column; gap: 15px;">
+        <div id="targetPanel" class="target-panel">
             <div class="block">
                 <div class="analysis-label">Job Description</div>
-                <textarea id="targetDesc" style="width:100%; height:120px; border:1px solid var(--border); border-radius:8px; font-size:0.85em; padding:10px;" placeholder="Pega la JD aquí..."></textarea>
-                <button style="width:100%; margin-top:10px; padding:10px; background:var(--ai-blue); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;" onclick="decodificarJD()">Analizar Vacante</button>
+                <textarea id="targetDesc" style="width:100%; height:150px; margin-top:10px; border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.85em;"></textarea>
+                <button class="tool-btn btn-primary" style="width:100%; margin-top:10px; justify-content:center;" onclick="analizarJD()">Analizar Vacante</button>
                 
-                <div id="jdAnalysisResults" style="display:none;">
+                <div id="jdAnalysis" style="display:none;">
                     <div class="analysis-label">Nombres Alternativos</div>
-                    <div id="altJobTitles" class="analysis-content"></div>
+                    <div id="altTitles" class="analysis-content"></div>
                     <div class="analysis-label">Actividades Diarias</div>
-                    <div id="dailyActivities" class="analysis-content"></div>
+                    <div id="dailyActs" class="analysis-content"></div>
+                    <div class="analysis-label">Skills Requeridas</div>
+                    <div id="sideSkills" style="margin-top:5px;"></div>
                 </div>
             </div>
-            <div id="sideSkills"></div>
         </div>
     </div>
 
     <script>
         let currentUser = "";
-        let userData = { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [], optimized: null };
-        let isPreviewMode = false;
+        // ARQUITECTURA DE DOBLE CAPA
+        let userData = {
+            master: { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [] },
+            optimized: null // Solo se puebla con Fase 3
+        };
+        let lastMasterState = null;
+        let isOptimizedView = false;
+        let recognition;
+        let currentVoiceIndex = null;
 
-        async function decodificarJD() {
-            const jd = document.getElementById('targetDesc').value;
-            if(!jd) return alert("Pega la JD");
-            showLoading("Analizando...");
-            try {
-                const res = await callIA("Analiza la JD. JSON: {score:0, skills:[{name:'',type:''}], alt:'', daily:''}", jd, 1000);
-                document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
-                document.getElementById('matchScoreDisplay').style.display = 'block';
-                document.getElementById('jdAnalysisResults').style.display = 'block';
-                document.getElementById('altJobTitles').innerText = res.alt;
-                document.getElementById('dailyActivities').innerText = res.daily;
-                let sHtml = "";
-                res.skills.forEach(s => sHtml += `<span class="skill-tag skill-${s.type}">${s.name}</span>`);
-                document.getElementById('sideSkills').innerHTML = sHtml;
-            } catch(e) { alert(e.message); }
-            hideLoading();
+        // Inicializar Voz
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                if(currentVoiceIndex === 'summary') {
+                    userData.master.summary += " " + text;
+                } else if(currentVoiceIndex !== null) {
+                    userData.master.blocks[currentVoiceIndex].logros += "\n• " + text;
+                }
+                renderAll();
+                guardar();
+            };
         }
 
-        async function optimizarCVFinal() {
-            const jd = document.getElementById('targetDesc').value;
-            if(!jd) return alert("Primero pega la JD");
-            showLoading("Fase 3: Optimizando para el JD...");
-            try {
-                const res = await callIA(`ACTÚA COMO EXPERTO ATS. 
-                Filtra el CV según la JD. Reescribe logros usando XYZ.
-                JSON: { summary:'', skills:[], blocks:[{header:'', logros:''}] }`, 
-                `JD: ${jd} \n CV: ${JSON.stringify(userData)}`, 3000);
-                
-                userData.optimized = res;
-                renderOptimized();
-                if(!isPreviewMode) togglePreview();
-            } catch(e) { alert("Fase 3 Error: " + e.message); }
-            hideLoading();
-        }
-
-        function renderOptimized() {
-            const data = userData.optimized || userData;
-            document.getElementById('summaryArea').innerText = data.summary;
+        function selectUser(user) {
+            currentUser = user;
+            document.getElementById('userSelector').style.display = 'none';
+            document.getElementById('toolbar').style.display = 'flex';
+            document.getElementById('mainLayout').style.display = 'grid';
+            document.getElementById('userDisplay').innerText = "Usuario: " + user;
             
-            if(data.skills && data.skills.length > 0) {
-                document.getElementById('cvSkillsSection').style.display = 'block';
-                document.getElementById('cvSkillsContainer').innerHTML = data.skills.map(s => `<span class="skill-tag skill-tech">${s}</span>`).join('');
+            const saved = localStorage.getItem('aivantage_' + user);
+            if(saved) {
+                const data = JSON.parse(saved);
+                // Migración a estructura de Doble Capa si es necesario
+                userData.master = data.master || data; 
+            }
+            renderAll();
+        }
+
+        function renderAll() {
+            const source = isOptimizedView ? userData.optimized : userData.master;
+            const container = document.getElementById('cvContent');
+            
+            if(!source) {
+                container.innerHTML = "<h3>Ejecuta la Fase 3 para ver la versión optimizada.</h3>";
+                return;
             }
 
-            document.getElementById('blocksExp').innerHTML = data.blocks.map(b => `
+            container.innerHTML = `
                 <div class="block">
-                    <div class="input-header">${b.header}</div>
-                    <div class="editable-area">${b.logros}</div>
+                    <input class="input-name" value="${source.name || ''}" placeholder="NOMBRE COMPLETO" onblur="updateMaster('name', this.value)">
+                    <div class="contact-row">
+                        <input class="input-contact" value="${source.email || ''}" placeholder="Email" onblur="updateMaster('email', this.value)">
+                        <input class="input-contact" value="${source.phone || ''}" placeholder="Teléfono" onblur="updateMaster('phone', this.value)">
+                        <input class="input-contact" value="${source.linkedin || ''}" placeholder="LinkedIn" onblur="updateMaster('linkedin', this.value)">
+                    </div>
                 </div>
-            `).join('');
+                <div class="section-title">Resumen Ejecutivo</div>
+                <div class="block">
+                    <div class="block-controls">
+                        <button class="tool-btn btn-mic" onclick="startVoice('summary')"><i class="fas fa-microphone"></i></button>
+                    </div>
+                    <div class="editable-area" contenteditable="${!isOptimizedView}" onblur="updateMaster('summary', this.innerText)">${source.summary || ''}</div>
+                </div>
+                ${isOptimizedView && source.skills ? `<div class="section-title">Competencias Clave</div><div class="block">${source.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>` : ''}
+                <div class="section-title">Experiencia Profesional</div>
+                <div id="blocksContainer">
+                    ${source.blocks.map((b, i) => `
+                        <div class="block">
+                            <div class="block-controls">
+                                ${!isOptimizedView ? `<button class="tool-btn btn-mic" onclick="startVoice(${i})"><i class="fas fa-microphone"></i></button>` : ''}
+                            </div>
+                            <input class="input-header" value="${b.header || ''}" placeholder="Empresa - Cargo - Fecha" onblur="updateBlock(${i}, 'header', this.value)" ${isOptimizedView ? 'readonly' : ''}>
+                            <div class="editable-area" contenteditable="${!isOptimizedView}" onblur="updateBlock(${i}, 'logros', this.innerText)">${b.logros || ''}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                ${!isOptimizedView ? `<button class="tool-btn" onclick="addBlock()"><i class="fas fa-plus"></i> Añadir Bloque</button>` : ''}
+            `;
         }
+
+        async function ejecutarFase3() {
+            const jd = document.getElementById('targetDesc').value;
+            if(!jd) return alert("Pega la Job Description primero.");
+            
+            showLoading("Fase 3: Seleccionando y reescribiendo logros bajo método XYZ...");
+            try {
+                const res = await callIA(`ACTÚA COMO EXPERTO ATS. 
+                1. Analiza el Master CV vs JD.
+                2. Selecciona solo logros relevantes.
+                3. Reescribe logros usando: Acción + Métrica + Resultado.
+                JSON: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score":0 }`, 
+                `JD: ${jd} \n CV MASTER: ${JSON.stringify(userData.master)}`, 3000);
+                
+                userData.optimized = res;
+                document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
+                document.getElementById('matchScoreDisplay').style.display = 'block';
+                
+                isOptimizedView = true;
+                document.getElementById('perfilView').classList.add('preview-mode');
+                renderAll();
+            } catch(e) { alert("Error en Fase 3: " + e.message); }
+            hideLoading();
+        }
+
+        async function analizarJD() {
+            const jd = document.getElementById('targetDesc').value;
+            showLoading("Analizando Vacante...");
+            try {
+                const res = await callIA(`Extrae datos de la JD. JSON: { "alt":"", "daily":"", "skills":[] }`, jd, 1000);
+                document.getElementById('jdAnalysis').style.display = 'block';
+                document.getElementById('altTitles').innerText = res.alt;
+                document.getElementById('dailyActs').innerText = res.daily;
+                document.getElementById('sideSkills').innerHTML = res.skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+            } catch(e) { console.error(e); }
+            hideLoading();
+        }
+
+        function togglePreview() {
+            if(isOptimizedView) {
+                // Si estamos en optimizado, volver al master
+                isOptimizedView = false;
+                document.getElementById('perfilView').classList.remove('preview-mode');
+            } else {
+                // Ver master en modo preview
+                document.getElementById('perfilView').classList.toggle('preview-mode');
+            }
+            renderAll();
+        }
+
+        // Funciones de gestión Master
+        function updateMaster(f, v) { if(isOptimizedView) return; saveHistory(); userData.master[f] = v; guardar(); }
+        function updateBlock(i, f, v) { if(isOptimizedView) return; saveHistory(); userData.master.blocks[i][f] = v; guardar(); }
+        function addBlock() { saveHistory(); userData.master.blocks.push({header:"", logros:""}); renderAll(); }
+        function startVoice(idx) { currentVoiceIndex = idx; recognition.start(); event.currentTarget.classList.add('recording'); setTimeout(()=>event.target.classList.remove('recording'), 5000); }
+        function saveHistory() { lastMasterState = JSON.parse(JSON.stringify(userData.master)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
+        function undo() { if(lastMasterState) { userData.master = JSON.parse(JSON.stringify(lastMasterState)); lastMasterState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); guardar(); } }
+        function guardar() { localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
 
         async function callIA(sys, usr, tokens) {
             const key = localStorage.getItem('aivantage_api_key');
@@ -199,49 +272,18 @@
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
                 body: JSON.stringify({
                     model: "gpt-4o",
-                    messages: [{ role: "system", content: sys + ". Responde SOLO JSON." }, { role: "user", content: usr }],
+                    messages: [{ role: "system", content: sys + ". RESPONDE SOLO JSON." }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
                     max_tokens: tokens
                 })
             });
-            const d = await response.json();
-            return JSON.parse(d.choices[0].message.content);
+            const data = await response.json();
+            return JSON.parse(data.choices[0].message.content);
         }
 
-        function selectUser(n) { 
-            currentUser = n; 
-            document.getElementById('userSelector').style.display = 'none'; 
-            document.getElementById('toolbar').style.display = 'flex'; 
-            document.getElementById('mainLayout').style.display = 'grid';
-            const s = localStorage.getItem('aivantage_'+n);
-            if(s) { userData = JSON.parse(s); renderAll(); }
-        }
-
-        function renderAll() {
-            document.getElementById('printName').value = userData.name || "";
-            document.getElementById('inputEmail').value = userData.email || "";
-            document.getElementById('summaryArea').innerText = userData.summary || "";
-            document.getElementById('blocksExp').innerHTML = userData.blocks.map((b, i) => `
-                <div class="block">
-                    <input class="input-header" value="${b.header}" onblur="userData.blocks[${i}].header=this.value; guardar()">
-                    <div class="editable-area" contenteditable="true" onblur="userData.blocks[${i}].logros=this.innerText; guardar()">${b.logros}</div>
-                </div>
-            `).join('');
-        }
-
-        function togglePreview() { 
-            isPreviewMode = !isPreviewMode; 
-            document.getElementById('perfilView').classList.toggle('preview-mode', isPreviewMode); 
-            document.getElementById('targetPanel').style.display = isPreviewMode ? 'none' : 'flex'; 
-        }
-
-        function updatePersonalData(f,v) { userData[f]=v; guardar(); }
-        function guardar() { localStorage.setItem('aivantage_'+currentUser, JSON.stringify(userData)); }
         function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText=m; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
-        function openSettings() { document.getElementById('settingsModal').style.display='flex'; }
-        function closeSettings() { document.getElementById('settingsModal').style.display='none'; }
-        function saveApiKey() { localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); closeSettings(); }
+        function saveApiKey() { localStorage.setItem('aivantage_api_key', document.getElementById('apiKeyInput').value.trim()); document.getElementById('settingsModal').style.display='none'; }
     </script>
 </body>
 </html>
