@@ -11,46 +11,43 @@
         :root { --ai-blue: #005587; --ai-light-blue: #eaf4f9; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; --danger: #e53e3e; --success: #2f855a; --warning: #c05621; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); transition: all 0.3s; }
         
-        /* Navbar & Toolbar */
         .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); display: flex; position: sticky; top: 0; z-index: 100; }
         .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); display: none; gap: 10px; align-items: center; position: sticky; top: 72px; z-index: 99; flex-wrap: wrap; }
         
-        /* Layout */
         .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1300px; margin: auto; }
         .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         .block-controls { position: absolute; right: 10px; top: 10px; display: flex; gap: 8px; z-index: 5; }
         
-        /* UI Elements */
         .tool-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
         .btn-primary { background: var(--ai-blue) !important; color: white !important; border: none; }
         .btn-mic.recording { background: var(--danger) !important; color: white !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* CV Text Formats */
         .input-name { border: none; outline: none; font-size: 28px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
         .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
         .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; }
         .section-title { font-weight: 800; text-transform: uppercase; color: #333; margin: 20px 0 10px 0; font-size: 0.9em; letter-spacing: 1px; border-bottom: 2px solid var(--ai-blue); display: inline-block; }
+        
+        /* FIX: Títulos de bloques como div para evitar recuadros pequeños */
+        .input-header { border: none; outline: none; font-weight: 700; font-size: 1.1em; color: var(--text-main); width: 100%; margin-bottom: 5px; background: transparent; display: block; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; margin-top: 5px; }
 
-        /* Sidebar Analysis */
         .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
         .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; }
         .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.72em; font-weight: 700; margin: 2px; display: inline-block; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
 
-        /* Modals & Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 450px; text-align: center; }
         #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
 
-        /* Print Mode */
         #perfilView.preview-mode { background: white; padding: 1.5cm; width: 21cm; min-height: 29.7cm; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
         .preview-mode .block { border: none !important; padding: 0 !important; margin-bottom: 1.2rem !important; }
         .preview-mode .block-controls, .preview-mode .tool-btn, .preview-mode #addBlockBtn { display: none !important; }
 
         @media print {
+            @page { margin: 0; } /* FIX: Limpieza de headers/footers del navegador */
             .navbar, .toolbar, .target-panel, #loadingOverlay, .block-controls, .tool-btn { display: none !important; }
-            body { background: white; }
+            body { background: white; margin: 1.5cm; }
             .main-layout { display: block; padding: 0; margin: 0; }
             #perfilView { box-shadow: none !important; width: 100% !important; padding: 0 !important; }
             #perfilView.preview-mode { padding: 0 !important; width: 100% !important; }
@@ -83,7 +80,7 @@
         <button class="tool-btn" onclick="document.getElementById('settingsModal').style.display='flex'"><i class="fas fa-cog"></i> Configurar</button>
         <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar Datos</button>
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)">
-        <button id="btnVoiceGlobal" class="tool-btn btn-mic" onclick="startVoice('global')"><i class="fas fa-comment-dots"></i> Deep Dive Global</button>
+        <button id="btnVoiceGlobal" class="tool-btn btn-mic" onclick="startVoice('global', this)"><i class="fas fa-comment-dots"></i> Deep Dive Global</button>
         <button id="btnPreviewToggle" class="tool-btn" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa</button>
         <button class="tool-btn btn-primary" onclick="ejecutarFase3()"><i class="fas fa-bolt"></i> Fase 3: Optimizar</button>
         <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-print"></i> PDF</button>
@@ -127,12 +124,11 @@
             master: { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [] },
             optimized: null
         };
-        let lastMasterState = null;
+        let historyStack = []; // FIX: Historial múltiple
         let isOptimizedView = false;
         let recognition;
         let currentVoiceTarget = null;
 
-        // VOZ - SPEECH RECOGNITION
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
@@ -186,7 +182,7 @@
                 </div>
                 ${isOptimizedView && source.skills ? `
                     <div class="section-title">Competencias Estratégicas</div>
-                    <div class="block">${source.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+                    <div class="block">${source.skills.map(s => `<span class="skill-tag">${typeof s === 'object' ? s.skill || '' : s}</span>`).join('')}</div>
                 ` : ''}
                 <div class="section-title">Experiencia Profesional</div>
                 <div id="blocksContainer">
@@ -197,7 +193,7 @@
                                 <button class="tool-btn btn-mic" onclick="startVoice(${i}, this)"><i class="fas fa-microphone"></i></button>
                                 <button class="tool-btn" style="color:var(--danger);" onclick="removeBlock(${i})"><i class="fas fa-trash"></i></button>
                             </div>` : ''}
-                            <input class="input-header" value="${b.header || ''}" placeholder="Empresa - Cargo - Fecha" onblur="updateBlock(${i}, 'header', this.value)" ${isOptimizedView ? 'readonly' : ''}>
+                            <div class="input-header" contenteditable="${!isOptimizedView}" onblur="updateBlock(${i}, 'header', this.innerText)" placeholder="Empresa - Cargo - Fecha">${b.header || ''}</div>
                             <div class="editable-area" contenteditable="${!isOptimizedView}" onblur="updateBlock(${i}, 'logros', this.innerText)">${b.logros || ''}</div>
                         </div>
                     `).join('')}
@@ -206,7 +202,6 @@
             `;
         }
 
-        // LÓGICA DE VOZ (Deep Dive)
         function startVoice(target, btn) {
             currentVoiceTarget = target;
             btn.classList.add('recording');
@@ -214,6 +209,7 @@
         }
 
         async function procesarVoz(text) {
+            saveHistory();
             if(currentVoiceTarget === 'global') {
                 showLoading("IA analizando comando de voz...");
                 const res = await callIA("Eres un asistente. Si el texto es un dato, devuélvelo limpio. Si es una orden (ej: 'añade x'), responde JSON: {action:'add', data:''}", text, 500);
@@ -229,16 +225,25 @@
             guardar();
         }
 
-        // FASE 3 Y SCORING
+        // FASE 3 CON TUS PROMPTS INTEGRADOS
         async function ejecutarFase3() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return alert("Pega la JD primero.");
-            showLoading("Fase 3: Optimizando y aplicando método XYZ...");
+            showLoading("Fase 3: Ingeniería de Perfil aplicando Método XYZ...");
+            
+            const systemPrompt = `ROLE: Senior Executive Career Strategist & ATS Logic Optimizer.
+            CONTEXT: GUSTAVO SAAB (15+ years scaling B2B SaaS at Google/Dropbox).
+            GOLDEN METRICS: €50M+ budget, 99% reporting reduction, 68% ROI increase, 140% quota attainment.
+            PROTOCOL: 
+            1. Analyze JD language and requirements.
+            2. Match against Gustavo's history.
+            3. Rewrite Summary and Blocks using Google XYZ (Accomplished [X] as measured by [Y], by doing [Z]).
+            4. If a major gap exists (iGaming, Web3), keep the space for Gustavo to fill.
+            RULES: No hallucinations. High-agency executive tone. Match JD language. NO mention of AI.
+            JSON FORMAT: { "summary":"", "skills":["skill1", "skill2"], "blocks":[{"header":"", "logros":""}], "score":0 }`;
+
             try {
-                const res = await callIA(`ATS EXPERT. Selecciona solo logros relevantes del Master CV para la JD.
-                Reescribe usando Acción+Métrica+Resultado. JSON: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score":0 }`, 
-                `JD: ${jd} \n CV: ${JSON.stringify(userData.master)}`, 3000);
-                
+                const res = await callIA(systemPrompt, `JD: ${jd} \n Master CV: ${JSON.stringify(userData.master)}`, 3000);
                 userData.optimized = res;
                 document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
@@ -251,9 +256,12 @@
 
         async function analizarJD() {
             const jd = document.getElementById('targetDesc').value;
-            showLoading("Analizando Vacante...");
+            if(!jd) return alert("Pega la JD.");
+            showLoading("Decodificando Vacante...");
+            const sys = `ROLE: Senior Recruitment Specialist. Analyze JD for Gustavo Saab.
+            JSON: { "alt":"Alternative titles", "daily":"Main activities", "skills":["top skill1", "skill2"], "score":0 }`;
             try {
-                const res = await callIA(`Extrae datos. JSON: { "alt":"", "daily":"", "skills":[], "score":0 }`, jd, 1000);
+                const res = await callIA(sys, jd, 1000);
                 document.getElementById('jdAnalysis').style.display = 'block';
                 document.getElementById('altTitles').innerText = res.alt;
                 document.getElementById('dailyActs').innerText = res.daily;
@@ -264,13 +272,25 @@
             hideLoading();
         }
 
-        // GESTIÓN DE DATOS MASTER
         function updateMaster(f, v) { if(isOptimizedView) return; saveHistory(); userData.master[f] = v; guardar(); }
         function updateBlock(i, f, v) { if(isOptimizedView) return; saveHistory(); userData.master.blocks[i][f] = v; guardar(); }
         function addBlock() { saveHistory(); userData.master.blocks.push({header:"", logros:""}); renderAll(); }
         function removeBlock(i) { saveHistory(); userData.master.blocks.splice(i, 1); renderAll(); guardar(); }
-        function saveHistory() { lastMasterState = JSON.parse(JSON.stringify(userData.master)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
-        function undo() { if(lastMasterState) { userData.master = JSON.parse(JSON.stringify(lastMasterState)); lastMasterState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
+        
+        function saveHistory() { 
+            historyStack.push(JSON.parse(JSON.stringify(userData.master)));
+            if(historyStack.length > 10) historyStack.shift();
+            document.getElementById('btnUndo').style.display = 'inline-flex'; 
+        }
+        
+        function undo() { 
+            if(historyStack.length > 0) { 
+                userData.master = historyStack.pop(); 
+                if(historyStack.length === 0) document.getElementById('btnUndo').style.display = 'none'; 
+                renderAll(); 
+            } 
+        }
+
         function guardar() { if(currentUser !== 'Invitado') localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
 
         function togglePreview() {
@@ -289,6 +309,7 @@
                     model: "gpt-4o",
                     messages: [{ role: "system", content: sys + ". RESPONDE SOLO JSON." }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
+                    temperature: 0, // FIX: Consistencia en el score
                     max_tokens: tokens
                 })
             });
