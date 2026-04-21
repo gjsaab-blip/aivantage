@@ -11,49 +11,50 @@
         :root { --ai-blue: #005587; --ai-light-blue: #eaf4f9; --text-main: #2c3e50; --border: #e2e8f0; --bg-app: #f8fafc; --danger: #e53e3e; --success: #2f855a; --warning: #c05621; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-app); margin: 0; color: var(--text-main); transition: all 0.3s; }
         
-        /* Layout */
+        /* Navbar & Toolbar */
         .navbar { justify-content: space-between; align-items: center; padding: 15px 40px; background: white; border-bottom: 1px solid var(--border); display: flex; position: sticky; top: 0; z-index: 100; }
         .toolbar { background: white; padding: 10px 40px; border-bottom: 1px solid var(--border); display: none; gap: 10px; align-items: center; position: sticky; top: 72px; z-index: 99; flex-wrap: wrap; }
-        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1300px; margin: auto; }
         
-        /* Componentes */
+        /* Layout */
+        .main-layout { display: none; grid-template-columns: 1fr 380px; gap: 25px; padding: 20px 40px; max-width: 1300px; margin: auto; }
         .block { background: white; border-radius: 12px; padding: 18px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         .block-controls { position: absolute; right: 10px; top: 10px; display: flex; gap: 8px; z-index: 5; }
+        
+        /* UI Elements */
         .tool-btn { background: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.82em; font-weight: 600; }
         .btn-primary { background: var(--ai-blue) !important; color: white !important; border: none; }
         .btn-mic.recording { background: var(--danger) !important; color: white !important; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* Formatos de Texto */
+        /* CV Text Formats */
         .input-name { border: none; outline: none; font-size: 28px; font-weight: 800; color: var(--ai-blue); width: 100%; text-align: center; text-transform: uppercase; background: transparent; }
         .contact-row { display: flex; justify-content: center; gap: 15px; margin-top: 10px; }
-        .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; width: auto; }
-        .input-header { border: none; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; font-size: 1.1em; width: 100%; font-weight: 800; color: var(--ai-blue); background: transparent; }
-        .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; }
+        .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; }
+        .section-title { font-weight: 800; text-transform: uppercase; color: #333; margin: 20px 0 10px 0; font-size: 0.9em; letter-spacing: 1px; border-bottom: 2px solid var(--ai-blue); display: inline-block; }
+        .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; margin-top: 5px; }
 
-        /* Análisis Lateral */
+        /* Sidebar Analysis */
         .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
         .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; }
-        .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; margin: 2px; display: inline-block; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+        .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.72em; font-weight: 700; margin: 2px; display: inline-block; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
 
-        /* Modales */
+        /* Modals & Overlays */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 450px; text-align: center; }
+        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
 
-        /* Vista Previa & Impresión */
+        /* Print Mode */
         #perfilView.preview-mode { background: white; padding: 1.5cm; width: 21cm; min-height: 29.7cm; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
         .preview-mode .block { border: none !important; padding: 0 !important; margin-bottom: 1.2rem !important; }
-        .preview-mode .block-controls, .preview-mode .btn-mic { display: none !important; }
-        .preview-mode .section-title { border-bottom: 1.5pt solid #333; margin-bottom: 8px; font-weight: 900; text-transform: uppercase; }
+        .preview-mode .block-controls, .preview-mode .tool-btn, .preview-mode #addBlockBtn { display: none !important; }
 
         @media print {
-            .navbar, .toolbar, .target-panel, #loadingOverlay { display: none !important; }
+            .navbar, .toolbar, .target-panel, #loadingOverlay, .block-controls, .tool-btn { display: none !important; }
             body { background: white; }
             .main-layout { display: block; padding: 0; margin: 0; }
             #perfilView { box-shadow: none !important; width: 100% !important; padding: 0 !important; }
+            #perfilView.preview-mode { padding: 0 !important; width: 100% !important; }
         }
-
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body>
@@ -63,26 +64,17 @@
         <p id="loadingStatus" style="margin-top: 15px; font-weight: 700;">AiVantage: Procesando...</p>
     </div>
 
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Configuración</h3>
-            <input type="password" id="apiKeyInput" style="width: 90%; padding: 10px;" placeholder="sk-...">
-            <button class="tool-btn btn-primary" style="margin-top:10px; width:100%;" onclick="saveApiKey()">Guardar API Key</button>
-            <button class="tool-btn" style="margin-top:5px; width:100%;" onclick="document.getElementById('settingsModal').style.display='none'">Cerrar</button>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div style="font-weight: 900; color: var(--ai-blue); font-size: 1.4em;">AiVantage</div>
         <div id="matchScoreDisplay" style="display:none; font-weight:900; padding:6px 16px; border-radius:20px; background:var(--ai-light-blue); color:var(--ai-blue);">Match: --%</div>
-        <div id="userDisplay" style="font-weight: 700;"></div>
+        <div id="userDisplay" style="font-weight: 700; color: gray;"></div>
     </nav>
 
     <div id="userSelector" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; gap: 20px;">
-        <h2>Selecciona Perfil</h2>
+        <h2>Inicia Sesión o Prueba la App</h2>
         <div style="display:flex; gap:20px;">
-            <button class="tool-btn" style="padding:20px;" onclick="selectUser('Gustavo')">GUSTAVO</button>
-            <button class="tool-btn" style="padding:20px;" onclick="selectUser('Invitado')">INVITADO</button>
+            <button class="tool-btn" style="padding:25px; flex-direction:column;" onclick="selectUser('Gustavo')"><i class="fas fa-user-tie" style="font-size:2em;"></i><span>GUSTAVO</span></button>
+            <button class="tool-btn" style="padding:25px; flex-direction:column;" onclick="selectUser('Invitado')"><i class="fas fa-user-secret" style="font-size:2em;"></i><span>INVITADO</span></button>
         </div>
     </div>
 
@@ -91,8 +83,9 @@
         <button class="tool-btn" onclick="document.getElementById('settingsModal').style.display='flex'"><i class="fas fa-cog"></i> Configurar</button>
         <button class="tool-btn" onclick="document.getElementById('fileInput').click()"><i class="fas fa-file-upload"></i> Cargar Datos</button>
         <input type="file" id="fileInput" style="display:none" onchange="handleFileUpload(event)">
+        <button id="btnVoiceGlobal" class="tool-btn btn-mic" onclick="startVoice('global')"><i class="fas fa-comment-dots"></i> Deep Dive Global</button>
         <button id="btnPreviewToggle" class="tool-btn" onclick="togglePreview()"><i class="fas fa-eye"></i> Vista Previa</button>
-        <button class="tool-btn btn-primary" onclick="ejecutarFase3()"><i class="fas fa-bolt"></i> Fase 3: Optimizar para JD</button>
+        <button class="tool-btn btn-primary" onclick="ejecutarFase3()"><i class="fas fa-bolt"></i> Fase 3: Optimizar</button>
         <button class="tool-btn" style="background:black !important; color:white !important;" onclick="window.print()"><i class="fas fa-print"></i> PDF</button>
     </div>
 
@@ -104,7 +97,7 @@
         <div id="targetPanel" class="target-panel">
             <div class="block">
                 <div class="analysis-label">Job Description</div>
-                <textarea id="targetDesc" style="width:100%; height:150px; margin-top:10px; border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.85em;"></textarea>
+                <textarea id="targetDesc" style="width:100%; height:150px; margin-top:10px; border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.85em;" placeholder="Pega aquí la vacante..."></textarea>
                 <button class="tool-btn btn-primary" style="width:100%; margin-top:10px; justify-content:center;" onclick="analizarJD()">Analizar Vacante</button>
                 
                 <div id="jdAnalysis" style="display:none;">
@@ -119,33 +112,37 @@
         </div>
     </div>
 
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Configuración</h3>
+            <input type="password" id="apiKeyInput" style="width: 90%; padding: 12px; border:1px solid var(--border); border-radius:8px;" placeholder="sk-...">
+            <button class="tool-btn btn-primary" style="margin-top:15px; width:100%; justify-content:center;" onclick="saveApiKey()">Guardar API Key</button>
+            <button class="tool-btn" style="margin-top:5px; width:100%; justify-content:center;" onclick="document.getElementById('settingsModal').style.display='none'">Cerrar</button>
+        </div>
+    </div>
+
     <script>
         let currentUser = "";
-        // ARQUITECTURA DE DOBLE CAPA
         let userData = {
             master: { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [] },
-            optimized: null // Solo se puebla con Fase 3
+            optimized: null
         };
         let lastMasterState = null;
         let isOptimizedView = false;
         let recognition;
-        let currentVoiceIndex = null;
+        let currentVoiceTarget = null;
 
-        // Inicializar Voz
+        // VOZ - SPEECH RECOGNITION
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
+            recognition.continuous = false;
             recognition.onresult = (e) => {
                 const text = e.results[0][0].transcript;
-                if(currentVoiceIndex === 'summary') {
-                    userData.master.summary += " " + text;
-                } else if(currentVoiceIndex !== null) {
-                    userData.master.blocks[currentVoiceIndex].logros += "\n• " + text;
-                }
-                renderAll();
-                guardar();
+                procesarVoz(text);
             };
+            recognition.onend = () => { document.querySelectorAll('.btn-mic').forEach(b => b.classList.remove('recording')); };
         }
 
         function selectUser(user) {
@@ -153,13 +150,14 @@
             document.getElementById('userSelector').style.display = 'none';
             document.getElementById('toolbar').style.display = 'flex';
             document.getElementById('mainLayout').style.display = 'grid';
-            document.getElementById('userDisplay').innerText = "Usuario: " + user;
+            document.getElementById('userDisplay').innerText = "Perfil: " + user;
             
-            const saved = localStorage.getItem('aivantage_' + user);
-            if(saved) {
-                const data = JSON.parse(saved);
-                // Migración a estructura de Doble Capa si es necesario
-                userData.master = data.master || data; 
+            if(user !== 'Invitado') {
+                const saved = localStorage.getItem('aivantage_' + user);
+                if(saved) {
+                    const parsed = JSON.parse(saved);
+                    userData.master = parsed.master || parsed;
+                }
             }
             renderAll();
         }
@@ -167,66 +165,87 @@
         function renderAll() {
             const source = isOptimizedView ? userData.optimized : userData.master;
             const container = document.getElementById('cvContent');
-            
             if(!source) {
-                container.innerHTML = "<h3>Ejecuta la Fase 3 para ver la versión optimizada.</h3>";
+                container.innerHTML = "<div class='block'><h3>Fase 3 pendiente. Haz clic en 'Optimizar' para generar esta vista.</h3></div>";
                 return;
             }
 
             container.innerHTML = `
                 <div class="block">
-                    <input class="input-name" value="${source.name || ''}" placeholder="NOMBRE COMPLETO" onblur="updateMaster('name', this.value)">
+                    <input class="input-name" value="${source.name || ''}" placeholder="NOMBRE COMPLETO" onblur="updateMaster('name', this.value)" ${isOptimizedView ? 'readonly' : ''}>
                     <div class="contact-row">
-                        <input class="input-contact" value="${source.email || ''}" placeholder="Email" onblur="updateMaster('email', this.value)">
-                        <input class="input-contact" value="${source.phone || ''}" placeholder="Teléfono" onblur="updateMaster('phone', this.value)">
-                        <input class="input-contact" value="${source.linkedin || ''}" placeholder="LinkedIn" onblur="updateMaster('linkedin', this.value)">
+                        <input class="input-contact" value="${source.email || ''}" placeholder="Email" onblur="updateMaster('email', this.value)" ${isOptimizedView ? 'readonly' : ''}>
+                        <input class="input-contact" value="${source.phone || ''}" placeholder="Teléfono" onblur="updateMaster('phone', this.value)" ${isOptimizedView ? 'readonly' : ''}>
+                        <input class="input-contact" value="${source.linkedin || ''}" placeholder="LinkedIn" onblur="updateMaster('linkedin', this.value)" ${isOptimizedView ? 'readonly' : ''}>
                     </div>
                 </div>
                 <div class="section-title">Resumen Ejecutivo</div>
                 <div class="block">
-                    <div class="block-controls">
-                        <button class="tool-btn btn-mic" onclick="startVoice('summary')"><i class="fas fa-microphone"></i></button>
-                    </div>
+                    ${!isOptimizedView ? `<div class="block-controls"><button class="tool-btn btn-mic" onclick="startVoice('summary', this)"><i class="fas fa-microphone"></i></button></div>` : ''}
                     <div class="editable-area" contenteditable="${!isOptimizedView}" onblur="updateMaster('summary', this.innerText)">${source.summary || ''}</div>
                 </div>
-                ${isOptimizedView && source.skills ? `<div class="section-title">Competencias Clave</div><div class="block">${source.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>` : ''}
+                ${isOptimizedView && source.skills ? `
+                    <div class="section-title">Competencias Estratégicas</div>
+                    <div class="block">${source.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div>
+                ` : ''}
                 <div class="section-title">Experiencia Profesional</div>
                 <div id="blocksContainer">
                     ${source.blocks.map((b, i) => `
                         <div class="block">
+                            ${!isOptimizedView ? `
                             <div class="block-controls">
-                                ${!isOptimizedView ? `<button class="tool-btn btn-mic" onclick="startVoice(${i})"><i class="fas fa-microphone"></i></button>` : ''}
-                            </div>
+                                <button class="tool-btn btn-mic" onclick="startVoice(${i}, this)"><i class="fas fa-microphone"></i></button>
+                                <button class="tool-btn" style="color:var(--danger);" onclick="removeBlock(${i})"><i class="fas fa-trash"></i></button>
+                            </div>` : ''}
                             <input class="input-header" value="${b.header || ''}" placeholder="Empresa - Cargo - Fecha" onblur="updateBlock(${i}, 'header', this.value)" ${isOptimizedView ? 'readonly' : ''}>
                             <div class="editable-area" contenteditable="${!isOptimizedView}" onblur="updateBlock(${i}, 'logros', this.innerText)">${b.logros || ''}</div>
                         </div>
                     `).join('')}
                 </div>
-                ${!isOptimizedView ? `<button class="tool-btn" onclick="addBlock()"><i class="fas fa-plus"></i> Añadir Bloque</button>` : ''}
+                ${!isOptimizedView ? `<button id="addBlockBtn" class="tool-btn" style="width:100%; justify-content:center;" onclick="addBlock()"><i class="fas fa-plus"></i> Añadir Experiencia</button>` : ''}
             `;
         }
 
+        // LÓGICA DE VOZ (Deep Dive)
+        function startVoice(target, btn) {
+            currentVoiceTarget = target;
+            btn.classList.add('recording');
+            recognition.start();
+        }
+
+        async function procesarVoz(text) {
+            if(currentVoiceTarget === 'global') {
+                showLoading("IA analizando comando de voz...");
+                const res = await callIA("Eres un asistente. Si el texto es un dato, devuélvelo limpio. Si es una orden (ej: 'añade x'), responde JSON: {action:'add', data:''}", text, 500);
+                if(res.action === 'add') { userData.master.blocks.push({header: 'Nueva Posición', logros: res.data}); }
+                else { userData.master.summary += " " + text; }
+                hideLoading();
+            } else if(currentVoiceTarget === 'summary') {
+                userData.master.summary += " " + text;
+            } else {
+                userData.master.blocks[currentVoiceTarget].logros += "\n• " + text;
+            }
+            renderAll();
+            guardar();
+        }
+
+        // FASE 3 Y SCORING
         async function ejecutarFase3() {
             const jd = document.getElementById('targetDesc').value;
-            if(!jd) return alert("Pega la Job Description primero.");
-            
-            showLoading("Fase 3: Seleccionando y reescribiendo logros bajo método XYZ...");
+            if(!jd) return alert("Pega la JD primero.");
+            showLoading("Fase 3: Optimizando y aplicando método XYZ...");
             try {
-                const res = await callIA(`ACTÚA COMO EXPERTO ATS. 
-                1. Analiza el Master CV vs JD.
-                2. Selecciona solo logros relevantes.
-                3. Reescribe logros usando: Acción + Métrica + Resultado.
-                JSON: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score":0 }`, 
-                `JD: ${jd} \n CV MASTER: ${JSON.stringify(userData.master)}`, 3000);
+                const res = await callIA(`ATS EXPERT. Selecciona solo logros relevantes del Master CV para la JD.
+                Reescribe usando Acción+Métrica+Resultado. JSON: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score":0 }`, 
+                `JD: ${jd} \n CV: ${JSON.stringify(userData.master)}`, 3000);
                 
                 userData.optimized = res;
                 document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
-                
                 isOptimizedView = true;
                 document.getElementById('perfilView').classList.add('preview-mode');
                 renderAll();
-            } catch(e) { alert("Error en Fase 3: " + e.message); }
+            } catch(e) { alert("Error Fase 3: " + e.message); }
             hideLoading();
         }
 
@@ -234,35 +253,31 @@
             const jd = document.getElementById('targetDesc').value;
             showLoading("Analizando Vacante...");
             try {
-                const res = await callIA(`Extrae datos de la JD. JSON: { "alt":"", "daily":"", "skills":[] }`, jd, 1000);
+                const res = await callIA(`Extrae datos. JSON: { "alt":"", "daily":"", "skills":[], "score":0 }`, jd, 1000);
                 document.getElementById('jdAnalysis').style.display = 'block';
                 document.getElementById('altTitles').innerText = res.alt;
                 document.getElementById('dailyActs').innerText = res.daily;
                 document.getElementById('sideSkills').innerHTML = res.skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+                document.getElementById('matchScoreDisplay').innerText = `Potencial: ${res.score}%`;
+                document.getElementById('matchScoreDisplay').style.display = 'block';
             } catch(e) { console.error(e); }
             hideLoading();
         }
 
-        function togglePreview() {
-            if(isOptimizedView) {
-                // Si estamos en optimizado, volver al master
-                isOptimizedView = false;
-                document.getElementById('perfilView').classList.remove('preview-mode');
-            } else {
-                // Ver master en modo preview
-                document.getElementById('perfilView').classList.toggle('preview-mode');
-            }
-            renderAll();
-        }
-
-        // Funciones de gestión Master
+        // GESTIÓN DE DATOS MASTER
         function updateMaster(f, v) { if(isOptimizedView) return; saveHistory(); userData.master[f] = v; guardar(); }
         function updateBlock(i, f, v) { if(isOptimizedView) return; saveHistory(); userData.master.blocks[i][f] = v; guardar(); }
         function addBlock() { saveHistory(); userData.master.blocks.push({header:"", logros:""}); renderAll(); }
-        function startVoice(idx) { currentVoiceIndex = idx; recognition.start(); event.currentTarget.classList.add('recording'); setTimeout(()=>event.target.classList.remove('recording'), 5000); }
+        function removeBlock(i) { saveHistory(); userData.master.blocks.splice(i, 1); renderAll(); guardar(); }
         function saveHistory() { lastMasterState = JSON.parse(JSON.stringify(userData.master)); document.getElementById('btnUndo').style.display = 'inline-flex'; }
-        function undo() { if(lastMasterState) { userData.master = JSON.parse(JSON.stringify(lastMasterState)); lastMasterState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); guardar(); } }
-        function guardar() { localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
+        function undo() { if(lastMasterState) { userData.master = JSON.parse(JSON.stringify(lastMasterState)); lastMasterState = null; document.getElementById('btnUndo').style.display = 'none'; renderAll(); } }
+        function guardar() { if(currentUser !== 'Invitado') localStorage.setItem('aivantage_' + currentUser, JSON.stringify(userData)); }
+
+        function togglePreview() {
+            isOptimizedView = !isOptimizedView;
+            document.getElementById('perfilView').classList.toggle('preview-mode', isOptimizedView);
+            renderAll();
+        }
 
         async function callIA(sys, usr, tokens) {
             const key = localStorage.getItem('aivantage_api_key');
@@ -277,8 +292,8 @@
                     max_tokens: tokens
                 })
             });
-            const data = await response.json();
-            return JSON.parse(data.choices[0].message.content);
+            const d = await response.json();
+            return JSON.parse(d.choices[0].message.content);
         }
 
         function showLoading(m) { document.getElementById('loadingOverlay').style.display='flex'; document.getElementById('loadingStatus').innerText=m; }
