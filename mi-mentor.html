@@ -28,8 +28,8 @@
         .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; }
         .section-title { font-weight: 800; text-transform: uppercase; color: #333; margin: 20px 0 10px 0; font-size: 0.9em; letter-spacing: 1px; border-bottom: 2px solid var(--ai-blue); display: inline-block; }
         
-        /* FIX: Títulos de bloques como div para evitar recuadros pequeños */
-        .input-header { border: none; outline: none; font-weight: 700; font-size: 1.1em; color: var(--text-main); width: 100%; margin-bottom: 5px; background: transparent; display: block; }
+        /* FIX: Títulos flexibles para evitar recortes */
+        .input-header { border: none; outline: none; font-weight: 700; font-size: 1.1em; color: var(--text-main); width: 100%; margin-bottom: 5px; background: transparent; display: block; min-height: 1.2em; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; margin-top: 5px; }
 
         .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
@@ -45,7 +45,7 @@
         .preview-mode .block-controls, .preview-mode .tool-btn, .preview-mode #addBlockBtn { display: none !important; }
 
         @media print {
-            @page { margin: 0; } /* FIX: Limpieza de headers/footers del navegador */
+            @page { margin: 0; }
             .navbar, .toolbar, .target-panel, #loadingOverlay, .block-controls, .tool-btn { display: none !important; }
             body { background: white; margin: 1.5cm; }
             .main-layout { display: block; padding: 0; margin: 0; }
@@ -124,7 +124,7 @@
             master: { name: "", email: "", phone: "", linkedin: "", summary: "", blocks: [] },
             optimized: null
         };
-        let historyStack = []; // FIX: Historial múltiple
+        let historyStack = [];
         let isOptimizedView = false;
         let recognition;
         let currentVoiceTarget = null;
@@ -147,7 +147,6 @@
             document.getElementById('toolbar').style.display = 'flex';
             document.getElementById('mainLayout').style.display = 'grid';
             document.getElementById('userDisplay').innerText = "Perfil: " + user;
-            
             if(user !== 'Invitado') {
                 const saved = localStorage.getItem('aivantage_' + user);
                 if(saved) {
@@ -182,7 +181,7 @@
                 </div>
                 ${isOptimizedView && source.skills ? `
                     <div class="section-title">Competencias Estratégicas</div>
-                    <div class="block">${source.skills.map(s => `<span class="skill-tag">${typeof s === 'object' ? s.skill || '' : s}</span>`).join('')}</div>
+                    <div class="block">${source.skills.map(s => `<span class="skill-tag">${typeof s === 'object' ? (s.skill || JSON.stringify(s)) : s}</span>`).join('')}</div>
                 ` : ''}
                 <div class="section-title">Experiencia Profesional</div>
                 <div id="blocksContainer">
@@ -209,43 +208,48 @@
         }
 
         async function procesarVoz(text) {
-            saveHistory();
-            if(currentVoiceTarget === 'global') {
-                showLoading("IA analizando comando de voz...");
-                const res = await callIA("Eres un asistente. Si el texto es un dato, devuélvelo limpio. Si es una orden (ej: 'añade x'), responde JSON: {action:'add', data:''}", text, 500);
-                if(res.action === 'add') { userData.master.blocks.push({header: 'Nueva Posición', logros: res.data}); }
-                else { userData.master.summary += " " + text; }
-                hideLoading();
-            } else if(currentVoiceTarget === 'summary') {
-                userData.master.summary += " " + text;
-            } else {
-                userData.master.blocks[currentVoiceTarget].logros += "\n• " + text;
-            }
-            renderAll();
-            guardar();
+            showLoading("IA Puliendo descripción...");
+            try {
+                // Mejora del Deep Dive: La IA ahora profesionaliza la entrada de voz [cite: 31-03-2026]
+                const promptVoz = `ROLE: Executive Resume Writer. Context: Gustavo Saab (Senior Tech Leader). Task: Take the following raw voice transcript and transform it into a high-impact professional achievement or summary part. Use high-agency verbs. Output JSON: {"texto": "refined professional content"}`;
+                const res = await callIA(promptVoz, text, 500);
+                const textoPulido = res.texto || text;
+
+                saveHistory();
+                if(currentVoiceTarget === 'global') {
+                    userData.master.blocks.push({header: 'Nueva Posición', logros: textoPulido});
+                } else if(currentVoiceTarget === 'summary') {
+                    userData.master.summary += (userData.master.summary ? " " : "") + textoPulido;
+                } else {
+                    userData.master.blocks[currentVoiceTarget].logros += (userData.master.blocks[currentVoiceTarget].logros ? "\n" : "") + "• " + textoPulido;
+                }
+                renderAll();
+                guardar();
+            } catch(e) { console.error("Error Voz:", e); }
+            hideLoading();
         }
 
-        // FASE 3 CON TUS PROMPTS INTEGRADOS
         async function ejecutarFase3() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return alert("Pega la JD primero.");
-            showLoading("Fase 3: Ingeniería de Perfil aplicando Método XYZ...");
+            showLoading("Optimizando Perfil Completo (XYZ)...");
             
+            // Prompt Integrado: Incluye TODAS tus instrucciones ejecutivas y métricas [cite: 23-04-2026]
             const systemPrompt = `ROLE: Senior Executive Career Strategist & ATS Logic Optimizer.
-            CONTEXT: GUSTAVO SAAB (15+ years scaling B2B SaaS at Google/Dropbox).
-            GOLDEN METRICS: €50M+ budget, 99% reporting reduction, 68% ROI increase, 140% quota attainment.
-            PROTOCOL: 
-            1. Analyze JD language and requirements.
-            2. Match against Gustavo's history.
-            3. Rewrite Summary and Blocks using Google XYZ (Accomplished [X] as measured by [Y], by doing [Z]).
-            4. If a major gap exists (iGaming, Web3), keep the space for Gustavo to fill.
-            RULES: No hallucinations. High-agency executive tone. Match JD language. NO mention of AI.
-            JSON FORMAT: { "summary":"", "skills":["skill1", "skill2"], "blocks":[{"header":"", "logros":""}], "score":0 }`;
+            CONTEXT: GUSTAVO SAAB (15+ years scaling B2B SaaS at Google/Dropbox). 
+            GOLDEN METRICS: €50M+ budget, 99% reporting reduction, 68% ROI increase.
+            MANDATORY: 
+            1. REWRITE EVERY SINGLE BLOCK from Master CV. DO NOT DROP ANY POSITIONS.
+            2. Apply Google XYZ formula. Match JD language.
+            3. SCORE: Calculate 0-100 strictly based on Keyword/Seniority match.
+            OUTPUT JSON ONLY: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score": 0 }`;
 
             try {
-                const res = await callIA(systemPrompt, `JD: ${jd} \n Master CV: ${JSON.stringify(userData.master)}`, 3000);
+                const res = await callIA(systemPrompt, `JD: ${jd} \n Master CV: ${JSON.stringify(userData.master)}`, 3500);
                 userData.optimized = res;
-                document.getElementById('matchScoreDisplay').innerText = `Match: ${res.score}%`;
+                // FIX: Asegurar que el score sea numérico para el display [cite: 21-04-2026]
+                const scoreValue = typeof res.score === 'number' ? res.score : parseInt(res.score) || 0;
+                document.getElementById('matchScoreDisplay').innerText = `Match: ${scoreValue}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
                 isOptimizedView = true;
                 document.getElementById('perfilView').classList.add('preview-mode');
@@ -257,16 +261,16 @@
         async function analizarJD() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return alert("Pega la JD.");
-            showLoading("Decodificando Vacante...");
-            const sys = `ROLE: Senior Recruitment Specialist. Analyze JD for Gustavo Saab.
-            JSON: { "alt":"Alternative titles", "daily":"Main activities", "skills":["top skill1", "skill2"], "score":0 }`;
+            showLoading("Analizando Vacante...");
+            const sys = `ROLE: Senior Recruitment Specialist. Analyze JD for Gustavo Saab. JSON: { "alt":"", "daily":"", "skills":[], "score":0 }`;
             try {
                 const res = await callIA(sys, jd, 1000);
                 document.getElementById('jdAnalysis').style.display = 'block';
                 document.getElementById('altTitles').innerText = res.alt;
                 document.getElementById('dailyActs').innerText = res.daily;
                 document.getElementById('sideSkills').innerHTML = res.skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
-                document.getElementById('matchScoreDisplay').innerText = `Potencial: ${res.score}%`;
+                const scoreValue = typeof res.score === 'number' ? res.score : parseInt(res.score) || 0;
+                document.getElementById('matchScoreDisplay').innerText = `Potencial: ${scoreValue}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
             } catch(e) { console.error(e); }
             hideLoading();
@@ -309,7 +313,7 @@
                     model: "gpt-4o",
                     messages: [{ role: "system", content: sys + ". RESPONDE SOLO JSON." }, { role: "user", content: usr }],
                     response_format: { type: "json_object" },
-                    temperature: 0, // FIX: Consistencia en el score
+                    temperature: 0,
                     max_tokens: tokens
                 })
             });
