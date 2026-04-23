@@ -28,12 +28,11 @@
         .input-contact { border: none; outline: none; font-size: 14px; color: #4a5568; background: transparent; text-align: center; }
         .section-title { font-weight: 800; text-transform: uppercase; color: #333; margin: 20px 0 10px 0; font-size: 0.9em; letter-spacing: 1px; border-bottom: 2px solid var(--ai-blue); display: inline-block; }
         
-        /* FIX: Títulos flexibles para evitar recortes */
         .input-header { border: none; outline: none; font-weight: 700; font-size: 1.1em; color: var(--text-main); width: 100%; margin-bottom: 5px; background: transparent; display: block; min-height: 1.2em; }
         .editable-area { outline: none; min-height: 20px; font-size: 0.95em; line-height: 1.7; white-space: pre-wrap; margin-top: 5px; }
 
         .analysis-label { font-size: 0.7em; font-weight: 900; color: var(--ai-blue); margin-top: 12px; text-transform: uppercase; }
-        .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; }
+        .analysis-content { font-size: 0.85em; color: #4a5568; background: #f8fafc; padding: 8px; border-radius: 6px; border-left: 3px solid var(--ai-blue); margin-top: 4px; white-space: pre-wrap; }
         .skill-tag { padding: 4px 10px; border-radius: 6px; font-size: 0.72em; font-weight: 700; margin: 2px; display: inline-block; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
@@ -100,7 +99,7 @@
                 <div id="jdAnalysis" style="display:none;">
                     <div class="analysis-label">Nombres Alternativos</div>
                     <div id="altTitles" class="analysis-content"></div>
-                    <div class="analysis-label">Actividades Diarias</div>
+                    <div class="analysis-label">Análisis de la Vacante & Gaps</div>
                     <div id="dailyActs" class="analysis-content"></div>
                     <div class="analysis-label">Skills Requeridas</div>
                     <div id="sideSkills" style="margin-top:5px;"></div>
@@ -208,10 +207,9 @@
         }
 
         async function procesarVoz(text) {
-            showLoading("IA Puliendo descripción...");
+            showLoading("IA Puliedo descripción...");
             try {
-                // Mejora del Deep Dive: La IA ahora profesionaliza la entrada de voz [cite: 31-03-2026]
-                const promptVoz = `ROLE: Executive Resume Writer. Context: Gustavo Saab (Senior Tech Leader). Task: Take the following raw voice transcript and transform it into a high-impact professional achievement or summary part. Use high-agency verbs. Output JSON: {"texto": "refined professional content"}`;
+                const promptVoz = `ROLE: Executive Resume Writer. Context: Gustavo Saab (Senior Tech Leader). Take the raw voice input and transform it into a high-impact professional achievement or summary part. Output JSON: {"texto": "refined content"}`;
                 const res = await callIA(promptVoz, text, 500);
                 const textoPulido = res.texto || text;
 
@@ -232,22 +230,19 @@
         async function ejecutarFase3() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return alert("Pega la JD primero.");
-            showLoading("Optimizando Perfil Completo (XYZ)...");
+            showLoading("Fase 3: Optimizando Perfil Completo...");
             
-            // Prompt Integrado: Incluye TODAS tus instrucciones ejecutivas y métricas [cite: 23-04-2026]
-            const systemPrompt = `ROLE: Senior Executive Career Strategist & ATS Logic Optimizer.
+            const systemPrompt = `ROLE: Senior Executive Career Strategist.
             CONTEXT: GUSTAVO SAAB (15+ years scaling B2B SaaS at Google/Dropbox). 
-            GOLDEN METRICS: €50M+ budget, 99% reporting reduction, 68% ROI increase.
             MANDATORY: 
-            1. REWRITE EVERY SINGLE BLOCK from Master CV. DO NOT DROP ANY POSITIONS.
+            1. REWRITE EVERY BLOCK from Master CV. NO POSITIONS LEFT OUT.
             2. Apply Google XYZ formula. Match JD language.
-            3. SCORE: Calculate 0-100 strictly based on Keyword/Seniority match.
-            OUTPUT JSON ONLY: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score": 0 }`;
+            3. SCORE: 0-100 based on fit.
+            JSON ONLY: { "summary":"", "skills":[], "blocks":[{"header":"", "logros":""}], "score": 0 }`;
 
             try {
                 const res = await callIA(systemPrompt, `JD: ${jd} \n Master CV: ${JSON.stringify(userData.master)}`, 3500);
                 userData.optimized = res;
-                // FIX: Asegurar que el score sea numérico para el display [cite: 21-04-2026]
                 const scoreValue = typeof res.score === 'number' ? res.score : parseInt(res.score) || 0;
                 document.getElementById('matchScoreDisplay').innerText = `Match: ${scoreValue}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
@@ -258,17 +253,32 @@
             hideLoading();
         }
 
+        // --- GAP ANALYSIS INTEGRADO ---
         async function analizarJD() {
             const jd = document.getElementById('targetDesc').value;
             if(!jd) return alert("Pega la JD.");
-            showLoading("Analizando Vacante...");
-            const sys = `ROLE: Senior Recruitment Specialist. Analyze JD for Gustavo Saab. JSON: { "alt":"", "daily":"", "skills":[], "score":0 }`;
+            showLoading("Realizando Gap Analysis...");
+            
+            const sys = `ROLE: Senior Recruitment Specialist. 
+            TASK: Compare JD against Gustavo Saab's Master CV.
+            1. Identify Gaps (what's missing in Gustavo's current CV for this role).
+            2. List Daily Activities.
+            3. Exact Match Score (0-100).
+            JSON: { "alt":"Alt job titles", "daily":"Main activities", "gaps":["Gap 1", "Gap 2"], "skills":["Required Skill 1", "2"], "score":0 }`;
+            
             try {
-                const res = await callIA(sys, jd, 1000);
+                const res = await callIA(sys, `JD: ${jd} \n\n CURRENT CV: ${JSON.stringify(userData.master)}`, 1500);
                 document.getElementById('jdAnalysis').style.display = 'block';
                 document.getElementById('altTitles').innerText = res.alt;
-                document.getElementById('dailyActs').innerText = res.daily;
+                
+                // Mostrar Actividades + Gaps críticos para el usuario
+                const gapDisplay = res.gaps && res.gaps.length > 0 
+                    ? `\n\n⚠️ PUNTOS A REFORZAR (GAPS):\n- ${res.gaps.join('\n- ')}` 
+                    : "\n\n✅ Perfil alineado con los requerimientos.";
+                
+                document.getElementById('dailyActs').innerText = res.daily + gapDisplay;
                 document.getElementById('sideSkills').innerHTML = res.skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+                
                 const scoreValue = typeof res.score === 'number' ? res.score : parseInt(res.score) || 0;
                 document.getElementById('matchScoreDisplay').innerText = `Potencial: ${scoreValue}%`;
                 document.getElementById('matchScoreDisplay').style.display = 'block';
